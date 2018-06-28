@@ -11,7 +11,7 @@
     - First 3 pixels will contain the size of the file
     - The next pixels will contain the extension of the file (used for getting back non plain text documents???)
     - We still encode the two least significant bits
-  - The secret message will be encoded from the pixel (1,0) , (1,1), (1,2), ..., (2,0)
+  - The secret message will be encoded from the pixel (1,0) , (1,1), (1,2), ..., (2,0), (2,1), ... until end of message
 
 ### Issues:
    - Only works on RGBA png files. issues with decoding jpg, bmp and gif (but no runtime error when encoding)
