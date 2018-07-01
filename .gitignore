@@ -1,6 +1,6 @@
 *.class
 encoded.*
-secret.txt
+secret*
 .DS_Store
 info
 text

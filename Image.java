@@ -67,17 +67,18 @@ public void encode() throws IOException{
       String b1 = line.substring(4,6);
       String b0 = line.substring(6,8);
 
-      //String alpha = (Integer.toBinaryString(table[3])).substring(0,6)+b3;
       // Left pixels
+      String alpha1 = (Integer.toBinaryString(leftTable[3]));
       String red1 = String.format("%8s", Integer.toBinaryString(leftTable[0])).replace(" ", "0").substring(0,6)+b3;
       String green1 = String.format("%8s", Integer.toBinaryString(leftTable[1])).replace(" ", "0").substring(0,6)+b2;
       String blue1 = (Integer.toBinaryString(leftTable[0]));
-      set_pixel(new_img,i,j,Integer.parseInt(red1,2),Integer.parseInt(green1,2),Integer.parseInt(blue1,2));
+      set_pixel(new_img,i,j,Integer.parseInt(alpha1,2),Integer.parseInt(red1,2),Integer.parseInt(green1,2),Integer.parseInt(blue1,2));
       // Right pixels
+      String alpha2 = (Integer.toBinaryString(rightTable[3]));
       String red2 = (Integer.toBinaryString(rightTable[2]));
       String green2 = String.format("%8s", Integer.toBinaryString(rightTable[1])).replace(" ", "0").substring(0,6)+b1;
       String blue2 = String.format("%8s", Integer.toBinaryString(rightTable[0])).replace(" ", "0").substring(0,6)+b0;
-      set_pixel(new_img,i,width-1-j,Integer.parseInt(red2,2),Integer.parseInt(green2,2),Integer.parseInt(blue2,2));
+      set_pixel(new_img,i,width-1-j,Integer.parseInt(alpha2,2),Integer.parseInt(red2,2),Integer.parseInt(green2,2),Integer.parseInt(blue2,2));
 
       j++;
    }
@@ -98,17 +99,18 @@ public void encode() throws IOException{
       String b1 = line.substring(4,6);
       String b0 = line.substring(6,8);
 
-      //String alpha = (Integer.toBinaryString(table[3])).substring(0,6)+b3;
       // Left pixels
+      String alpha1 = (Integer.toBinaryString(leftTable[3]));
       String red1 = String.format("%8s", Integer.toBinaryString(leftTable[0])).replace(" ", "0").substring(0,6)+b3;
       String green1 = String.format("%8s", Integer.toBinaryString(leftTable[1])).replace(" ", "0").substring(0,6)+b2;
       String blue1 = (Integer.toBinaryString(leftTable[0]));
-      set_pixel(new_img,i,j,Integer.parseInt(red1,2),Integer.parseInt(green1,2),Integer.parseInt(blue1,2));
+      set_pixel(new_img,i,j,Integer.parseInt(alpha1,2),Integer.parseInt(red1,2),Integer.parseInt(green1,2),Integer.parseInt(blue1,2));
       // Right pixels
+      String alpha2 = (Integer.toBinaryString(rightTable[3]));
       String red2 = (Integer.toBinaryString(rightTable[2]));
       String green2 = String.format("%8s", Integer.toBinaryString(rightTable[1])).replace(" ", "0").substring(0,6).substring(0,6)+b1;
       String blue2 = String.format("%8s", Integer.toBinaryString(rightTable[0])).replace(" ", "0").substring(0,6)+b0;
-      set_pixel(new_img,i,width-1-j,Integer.parseInt(red2,2),Integer.parseInt(green2,2),Integer.parseInt(blue2,2));
+      set_pixel(new_img,i,width-1-j,Integer.parseInt(alpha2,2),Integer.parseInt(red2,2),Integer.parseInt(green2,2),Integer.parseInt(blue2,2));
 
       j++;
       if(j>=width-j-1){
@@ -216,7 +218,7 @@ public void decode() throws IOException{
     }while(k>0);
     writer.close();
     //System.out.println("----------\n"+secret_msg+"----------");
-    System.out.println("Message saved to "+outputFileName);
+    System.out.println("Message saved to file "+outputFileName);
 
   }catch(IOException e){
     System.out.println("Image Not Found!");
@@ -225,25 +227,25 @@ public void decode() throws IOException{
 public int[] get_pixel(BufferedImage img,int x, int y){
   int i = img.getRGB(y,x);
   //System.out.println(Integer.toBinaryString(i));
-  //int alpha = ((i & 0xFF000000)>>>24);
+  int alpha = ((i & 0xFF000000)>>>24);
   int red = ((i & 0x00FF0000)>>>16);
   int green = ((i & 0x0000FF00)>>>8);
   int blue =  (i & 0x000000FF);
-  int[] table_pixel = new int[3];
-  //table_pixel[3] = alpha;
+  int[] table_pixel = new int[4];
+  table_pixel[3] = alpha;
   table_pixel[2] = red;
   table_pixel[1] = green;
   table_pixel[0] = blue;
   return table_pixel;
 }
-public void set_pixel(BufferedImage img,int x,int y ,int b2, int b1, int b0){
-   //int B3 = ((b3 & 0x000000FF)<<24);
+public void set_pixel(BufferedImage img,int x,int y, int b3,int b2, int b1, int b0){
+   int B3 = ((b3 & 0x000000FF)<<24);
    int B2 = ((b2 & 0x000000FF)<<16);
    int B1 = ((b1 & 0x000000FF)<<8);
    int B0 = (b0 & 0x000000FF);
   //String i = b3+b2+b1+b0;
   //long j = Integer.parseInt(i,2);
-  int i = (B2 + B1 + B0);
+  int i = (B3 + B2 + B1 + B0);
   img.setRGB(y,x,i);
 }
 

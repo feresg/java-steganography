@@ -31,15 +31,17 @@ public class Message {
     text = new File(filename);
     BufferedWriter writer = new BufferedWriter(new FileWriter("text")); //buffer to write to file
     BufferedWriter infoWriter = new BufferedWriter(new FileWriter("info")); // buffer to write to info file
+      // Adding to info file extension (plain text doc => no extension)
+      for(int i=0; i<5; i++){
+        infoWriter.append("00000000");
+        infoWriter.newLine();
+      }
     // Adding to text file message size (in 24 bits)
     String msg_length = String.format("%24s", Integer.toBinaryString(msg.length())).replace(' ', '0');
     for (int i=0; i<24; i+=8){
       infoWriter.append(msg_length.substring(i, i+8));
-      infoWriter.newLine();  
+      infoWriter.newLine();
     }
-    // Adding to info file extension (plain text doc => no extension)
-    infoWriter.append("00000000");
-    infoWriter.newLine();
     infoWriter.close();
 
     byte[] bin = null;
