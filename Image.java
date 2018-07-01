@@ -5,9 +5,17 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner ;
+import java.util.Scanner;
 import java.io.UnsupportedEncodingException;
 import java.io.BufferedReader;
+// JPEG Compression (?)
+// import javax.imageio.IIOImage;
+// import javax.imageio.ImageIO;
+// import javax.imageio.ImageWriter;
+// import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+// import javax.imageio.stream.ImageOutputStream;
+// import java.util.Locale;
+// import javax.imageio.ImageWriteParam;
 
 /*
     Class Image:Handles the image and coding .
@@ -41,60 +49,96 @@ public class Image {
 public void encode() throws IOException{
   try{
     BufferedImage new_img = ImageIO.read(new File(path));
-    // First step : encoding file size in pixels (0,0) to (0,2) ==> ~ 16 Mb
-    //& Second step : encoding file extension in pixels (0,3) to (0,8) ==> .+5 caracters
+    // First step : encoding file extension
+    // & Second step : encoding file size
     BufferedReader infoReader = new BufferedReader(new FileReader("./info")); //reads the text.
     String line;
-    int i=0;
+    int width = new_img.getWidth();
+    int i=0,j=0;
+    System.out.println("WIDTH:"+new_img.getWidth());
+    System.out.println("HEIGHT:"+new_img.getHeight());
     while((line = infoReader.readLine()) != null){
-      System.out.println("0,"+i);
-      int[] table = get_pixel(new_img,0,i);
+      System.out.println(i+","+j+"\t"+i+","+(width-1-j));
+      int[] leftTable = get_pixel(new_img,i,j);
+      int[] rightTable = get_pixel(new_img,i, width-1-j);
       //System.out.println(get_pixel(new_img,0,i));
       String b3 = line.substring(0,2);
       String b2 = line.substring(2,4);
       String b1 = line.substring(4,6);
       String b0 = line.substring(6,8);
-      
-      String alpha = (Integer.toBinaryString(table[3])).substring(0,6)+b3;
-      String red = (Integer.toBinaryString(table[2])).substring(0,6)+b2;
-      String green = (Integer.toBinaryString(table[1])).substring(0,6)+b1;
-      String blue = (Integer.toBinaryString(table[0])).substring(0,6)+b0;
-      set_pixel(new_img,0,i,Integer.parseInt(alpha,2),Integer.parseInt(red,2),Integer.parseInt(green,2),Integer.parseInt(blue,2));
 
-      i++;
+      //String alpha = (Integer.toBinaryString(table[3])).substring(0,6)+b3;
+      // Left pixels
+      String red1 = String.format("%8s", Integer.toBinaryString(leftTable[0])).replace(" ", "0").substring(0,6)+b3;
+      String green1 = String.format("%8s", Integer.toBinaryString(leftTable[1])).replace(" ", "0").substring(0,6)+b2;
+      String blue1 = (Integer.toBinaryString(leftTable[0]));
+      set_pixel(new_img,i,j,Integer.parseInt(red1,2),Integer.parseInt(green1,2),Integer.parseInt(blue1,2));
+      // Right pixels
+      String red2 = (Integer.toBinaryString(rightTable[2]));
+      String green2 = String.format("%8s", Integer.toBinaryString(rightTable[1])).replace(" ", "0").substring(0,6)+b1;
+      String blue2 = String.format("%8s", Integer.toBinaryString(rightTable[0])).replace(" ", "0").substring(0,6)+b0;
+      set_pixel(new_img,i,width-1-j,Integer.parseInt(red2,2),Integer.parseInt(green2,2),Integer.parseInt(blue2,2));
+
+      j++;
    }
    infoReader.close();
+   i++;
+   j=0;
     // Final step : encoding message from index (1,0) until end of message
     BufferedReader reader = new BufferedReader(new FileReader("./text")); //reads the text.
-    int u=1, v=0;
-    System.out.println("WIDTH:"+new_img.getWidth());
-    System.out.println("HEIGHT:"+new_img.getHeight());
 
     //set_pixel(new_img,u,v,Integer.parseInt(count,2),Integer.parseInt(count,2),Integer.parseInt(count,2),Integer.parseInt(count,2));
     while( (line = reader.readLine()) != null){
-      System.out.println(u+","+v);
-       int[] table = get_pixel(new_img,u,v);
-       //System.out.println(get_pixel(new_img,u,v));
-       String b3 = line.substring(0,2);
-       String b2 = line.substring(2,4);
-       String b1 = line.substring(4,6);
-       String b0 = line.substring(6,8);
-       String alpha = String.format("%8s", Integer.toBinaryString(table[3])).replace(' ', '0').substring(0,6)+b3;
-       String red = String.format("%8s", Integer.toBinaryString(table[2])).replace(' ', '0').substring(0,6)+b2;
-       String green = String.format("%8s", Integer.toBinaryString(table[1])).replace(' ', '0').substring(0,6)+b1;
-       String blue = String.format("%8s", Integer.toBinaryString(table[0])).replace(' ', '0').substring(0,6)+b0;
+      System.out.println(i+","+j+"\t"+i+","+(width-1-j));
+      int[] leftTable = get_pixel(new_img,i,j);
+      int[] rightTable = get_pixel(new_img,i, width-1-j);
+      //System.out.println(get_pixel(new_img,0,i));
+      String b3 = line.substring(0,2);
+      String b2 = line.substring(2,4);
+      String b1 = line.substring(4,6);
+      String b0 = line.substring(6,8);
 
-      set_pixel(new_img,u,v,Integer.parseInt(alpha,2),Integer.parseInt(red,2),Integer.parseInt(green,2),Integer.parseInt(blue,2));
-      v++;
-      if (v > new_img.getWidth()-1 ){
-        u++;
-        v=0;
+      //String alpha = (Integer.toBinaryString(table[3])).substring(0,6)+b3;
+      // Left pixels
+      String red1 = String.format("%8s", Integer.toBinaryString(leftTable[0])).replace(" ", "0").substring(0,6)+b3;
+      String green1 = String.format("%8s", Integer.toBinaryString(leftTable[1])).replace(" ", "0").substring(0,6)+b2;
+      String blue1 = (Integer.toBinaryString(leftTable[0]));
+      set_pixel(new_img,i,j,Integer.parseInt(red1,2),Integer.parseInt(green1,2),Integer.parseInt(blue1,2));
+      // Right pixels
+      String red2 = (Integer.toBinaryString(rightTable[2]));
+      String green2 = String.format("%8s", Integer.toBinaryString(rightTable[1])).replace(" ", "0").substring(0,6).substring(0,6)+b1;
+      String blue2 = String.format("%8s", Integer.toBinaryString(rightTable[0])).replace(" ", "0").substring(0,6)+b0;
+      set_pixel(new_img,i,width-1-j,Integer.parseInt(red2,2),Integer.parseInt(green2,2),Integer.parseInt(blue2,2));
+
+      j++;
+      if(j>=width-j-1){
+        j=0;
+        i++;
       }
+
       //System.out.println(get_pixel(new_img,u,v));
     }
     reader.close();
     File secret_img = new File("encoded."+ext);
-    ImageIO.write(new_img, ext, secret_img);
+    if (ext.equals("jpg")){
+      System.out.println("INSIDE JPG IF");
+      // float quality = 1f;
+      // ImageWriter imgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
+      // ImageOutputStream ioStream = ImageIO.createImageOutputStream(secret_img);
+      // imgWriter.setOutput( ioStream );
+
+      // JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(Locale.getDefault());
+      // jpegParams.setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
+      // jpegParams.setCompressionQuality( quality );
+      // imgWriter.write( null, new IIOImage( new_img, null, null ), jpegParams );
+      // ioStream.flush();
+      // ioStream.close();
+      // imgWriter.dispose();
+      ImageIO.write(new_img, "png", secret_img);
+
+    }else{
+      ImageIO.write(new_img, ext, secret_img);
+    }
     System.out.println("Message hidden inside encoded."+ext);
   } catch(IOException e){
     System.out.println("Image Not Found!");
@@ -103,62 +147,76 @@ public void encode() throws IOException{
 public void decode() throws IOException{
   try{
     BufferedImage secret_img = ImageIO.read(new File(path));
-    // First step : decoding file size in pixels (0,0) to (0,2) ==> ~ 16 Mb
-    int msg_len = 0;
-    String len_bin = "";
-    int k=0;
-    while(k<3){
-      int [] size = get_pixel(secret_img, 0, k);
-      for(int i=size.length-1; i>=0; i--){
-        len_bin += Integer.toBinaryString(size[i]).substring(6,8);
-      }
-      k++;
-    }
-    System.out.println(len_bin);
-    msg_len = Integer.parseInt(len_bin,2);
-    System.out.println("Hidden Message Length: "+msg_len);
-    // Second step : decoding file extension in pixels (0,3) to (0,7) ==> 5 caracters
+    // First step : decoding file extension in pixels (0,3) to (0,7) ==> 5 caracters
     String file_ext = "";
     String ext_bin="";
-    while(!(ext_bin.equals("00000000"))){
+    int i=0, j=0;
+    int width = secret_img.getWidth();
+    while(j<5){
       ext_bin="";
-      int [] ext = get_pixel(secret_img, 0, k);
-      for(int i=ext.length-1; i>=0; i--){
-        ext_bin += Integer.toBinaryString(ext[i]).substring(6,8);
-      }
-      if (ext_bin.equals("00000000"))
+      int [] leftExt = get_pixel(secret_img, i, j);
+      int [] rightExt = get_pixel(secret_img, i, width-1-j);
+      ext_bin += String.format("%8s", Integer.toBinaryString(leftExt[2])).replace(" ", "0").substring(6,8);
+      ext_bin += String.format("%8s", Integer.toBinaryString(leftExt[1])).replace(" ", "0").substring(6,8);
+      ext_bin += String.format("%8s", Integer.toBinaryString(rightExt[1])).replace(" ", "0").substring(6,8);
+      ext_bin += String.format("%8s", Integer.toBinaryString(rightExt[0])).replace(" ", "0").substring(6,8);
+      //System.out.println(ext_bin);
+      if (ext_bin.equals("00000000")){
         break;
-      file_ext += (char) Integer.parseInt(ext_bin,2);
-      k++;
+      }
+      file_ext +=(char)Integer.parseInt(ext_bin,2);
+      j++;
     }
-    System.out.println("Hidden File Extension: "+file_ext);
+    String trimmed_file_ext = file_ext.substring(0,j);
+    // Second step : decoding file size in pixels (0,0) to (0,2) ==> ~ 16 Mb
+    j=5;
+    int msg_len = 0;
+    String len_bin = "";
+    while(j<8){
+      int [] leftSize = get_pixel(secret_img, i, j);
+      int [] rightSize = get_pixel(secret_img, i, width-1-j);
+      len_bin += String.format("%8s", Integer.toBinaryString(leftSize[2])).replace(" ", "0").substring(6,8);
+      len_bin += String.format("%8s", Integer.toBinaryString(leftSize[1])).replace(" ", "0").substring(6,8);
+      len_bin += String.format("%8s", Integer.toBinaryString(rightSize[1])).replace(" ", "0").substring(6,8);
+      len_bin += String.format("%8s", Integer.toBinaryString(rightSize[0])).replace(" ", "0").substring(6,8);
+      file_ext += (char) Integer.parseInt(ext_bin,2);
+      j++;
+    }
+    //System.out.println(len_bin);
+    msg_len = Integer.parseInt(len_bin,2);
+    System.out.println("Hidden Message Length: "+msg_len);
+    System.out.println("Hidden File Extension: "+trimmed_file_ext);
     // Final step : decoding message from index (1,0) until end of message
     String secret_msg = "";
-    File msg = new File("secret"+((ext !="")? "." : "")+file_ext);
+    String outputFileName = Helpers.setOutputFilename(trimmed_file_ext);
+    File msg = new File(outputFileName);
     BufferedWriter writer = new BufferedWriter(new FileWriter(msg)); //buffer to write to file
-    int i = 1,j=0;
-    k=msg_len;
+    i++;
+    j=0;
+    int k=msg_len;
     do{
       String char_bin = "";
-      int [] data = get_pixel(secret_img, i, j);
-      for(int l=data.length-1; l>=0; l--){
-        System.out.println(String.format("%8s", Integer.toBinaryString(data[l])).replace(' ', '0'));
-        char_bin += String.format("%8s", Integer.toBinaryString(data[l])).replace(' ', '0').substring(6,8);
-      }
+      int [] leftData = get_pixel(secret_img, i, j);
+      int [] rightData = get_pixel(secret_img, i, width-1-j);
+      char_bin += String.format("%8s", Integer.toBinaryString(leftData[2])).replace(" ", "0").substring(6,8);
+      char_bin += String.format("%8s", Integer.toBinaryString(leftData[1])).replace(" ", "0").substring(6,8);
+      char_bin += String.format("%8s", Integer.toBinaryString(rightData[1])).replace(" ", "0").substring(6,8);
+      char_bin += String.format("%8s", Integer.toBinaryString(rightData[0])).replace(" ", "0").substring(6,8);
       //System.out.println(char_bin);
-      secret_msg+= (char) Integer.parseInt(char_bin,2);
+      //secret_msg+= (char) Integer.parseInt(char_bin,2);
       writer.append((char) Integer.parseInt(char_bin,2));
       //System.out.println(secret_msg);
       k--;
-      System.out.println(msg_len - k);
+      //System.out.println(msg_len - k);
       j++;
-      if (j > secret_img.getWidth() - 1){
+      if (j >= secret_img.getWidth() - 1 -j){
         i++;
         j=0;
       }
     }while(k>0);
     writer.close();
-    System.out.println(secret_msg);
+    //System.out.println("----------\n"+secret_msg+"----------");
+    System.out.println("Message saved to "+outputFileName);
 
   }catch(IOException e){
     System.out.println("Image Not Found!");
@@ -167,25 +225,25 @@ public void decode() throws IOException{
 public int[] get_pixel(BufferedImage img,int x, int y){
   int i = img.getRGB(y,x);
   //System.out.println(Integer.toBinaryString(i));
-  int alpha = ((i & 0xFF000000)>>>24);
+  //int alpha = ((i & 0xFF000000)>>>24);
   int red = ((i & 0x00FF0000)>>>16);
   int green = ((i & 0x0000FF00)>>>8);
   int blue =  (i & 0x000000FF);
-  int[] table_pixel = new int[4];
-  table_pixel[3] = alpha;
+  int[] table_pixel = new int[3];
+  //table_pixel[3] = alpha;
   table_pixel[2] = red;
   table_pixel[1] = green;
   table_pixel[0] = blue;
   return table_pixel;
 }
-public void set_pixel(BufferedImage img,int x,int y ,int b3 ,int b2, int b1, int b0){
-   int B3 = ((b3 & 0x000000FF)<<24);
+public void set_pixel(BufferedImage img,int x,int y ,int b2, int b1, int b0){
+   //int B3 = ((b3 & 0x000000FF)<<24);
    int B2 = ((b2 & 0x000000FF)<<16);
    int B1 = ((b1 & 0x000000FF)<<8);
    int B0 = (b0 & 0x000000FF);
   //String i = b3+b2+b1+b0;
   //long j = Integer.parseInt(i,2);
-  int i = (B3 + B2 + B1 + B0);
+  int i = (B2 + B1 + B0);
   img.setRGB(y,x,i);
 }
 

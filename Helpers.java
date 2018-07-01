@@ -4,4 +4,11 @@ public class Helpers{
         return path.substring(path.lastIndexOf(".")+1);
         else return "";
     }
+    public static String setOutputFilename(String extension){
+        String res = "secret";
+        if (extension.equals(""))
+            return res;
+        return res+='.'+extension;
+    }
+
 }

@@ -1,5 +1,5 @@
 *.class
-encoded.png
+encoded.*
 secret.txt
 .DS_Store
 info
