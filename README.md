@@ -20,8 +20,8 @@
 
 ### Issues:
   - Issue with encoding UTF-8 documents (only works with ASCII text documents)
-  - ~~When encoding RGBA image, the encoded pixels become transparent (WTF :o)~~ Fixed, but RGBA images look a bit weird in the encoded zone
   - Only works on png and bmp files. We can encode a jpeg only if the encoded output image is saved as a png or a bmp (not a jpeg). gif encoding and decoding not yet supported
+
 ### TODO :
   - Crypting the message before encoding
   - Encoding images inside an image
