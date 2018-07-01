@@ -69,7 +69,7 @@ public void encode() throws IOException{
 
       // Left pixels
       String alpha1 = (Integer.toBinaryString(leftTable[3]));
-      String red1 = String.format("%8s", Integer.toBinaryString(leftTable[0])).replace(" ", "0").substring(0,6)+b3;
+      String red1 = String.format("%8s", Integer.toBinaryString(leftTable[2])).replace(" ", "0").substring(0,6)+b3;
       String green1 = String.format("%8s", Integer.toBinaryString(leftTable[1])).replace(" ", "0").substring(0,6)+b2;
       String blue1 = (Integer.toBinaryString(leftTable[0]));
       set_pixel(new_img,i,j,Integer.parseInt(alpha1,2),Integer.parseInt(red1,2),Integer.parseInt(green1,2),Integer.parseInt(blue1,2));
@@ -101,7 +101,7 @@ public void encode() throws IOException{
 
       // Left pixels
       String alpha1 = (Integer.toBinaryString(leftTable[3]));
-      String red1 = String.format("%8s", Integer.toBinaryString(leftTable[0])).replace(" ", "0").substring(0,6)+b3;
+      String red1 = String.format("%8s", Integer.toBinaryString(leftTable[2])).replace(" ", "0").substring(0,6)+b3;
       String green1 = String.format("%8s", Integer.toBinaryString(leftTable[1])).replace(" ", "0").substring(0,6)+b2;
       String blue1 = (Integer.toBinaryString(leftTable[0]));
       set_pixel(new_img,i,j,Integer.parseInt(alpha1,2),Integer.parseInt(red1,2),Integer.parseInt(green1,2),Integer.parseInt(blue1,2));
