@@ -19,7 +19,7 @@
   - (This assumes that the encoded picture width is atleast 16-18 pixels)
   - Tested working document formats :
       - WORKING .txt, .log, (any plain text file format (.java, .py .cpp...)) .xml .rtf (includes rich text formatting)
-      - KIND OF working : .doc (depending on the amount of editing...).
+      - KIND OF working : .doc (depending on the amount of editing...)
       - NOT working : .pdf .docx
 
 ### Issues:
