@@ -29,6 +29,6 @@
 ### TODO :
   - Crypting the message before encoding
   - Encoding images inside an image
-  - GUI (using JAVAFx)
+  - GUI (using JavaFX)
 
  
