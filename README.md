@@ -25,6 +25,7 @@
 ### Issues:
   - ~~Issue with encoding UTF-8 documents (only works with ASCII text documents)~~ Fixed
   - Only works on png and bmp files. We can encode a jpeg only if the encoded output image is saved as a png or a bmp (not a jpeg). gif encoding and decoding not yet supported
+  - Files containing accents, arabic letters...
 
 ### TODO :
   - Crypting the message before encoding
