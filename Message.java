@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner ;
 import java.io.UnsupportedEncodingException;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 
 /* Class Message is responsible for handling users input and processing the text.
    Methods: set_input(): takes text input from user.
@@ -56,19 +59,22 @@ public class Message {
 //convert the document input to a binary file
   public void convert_document() throws IOException{
     try {
-      BufferedReader reader = new BufferedReader(new FileReader(filepath));//reads the user file
-      
+      InputStreamReader streamReader = new InputStreamReader(new FileInputStream(filepath));
+
+      BufferedReader reader = new BufferedReader(streamReader);//reads the user file
+
       BufferedWriter textWriter = new BufferedWriter(new FileWriter("text")); //buffer to write to file
 
       BufferedWriter infoWriter = new BufferedWriter(new FileWriter("info")); // buffer to write to info file
-      
+
       // Adding to info file extension (plain text doc => no extension)
       String file_ext = Helpers.getFileExtension(filepath);
       byte [] ext = null;
       ext = file_ext.getBytes();
       for (byte e:ext){
         String x = Integer.toBinaryString(e);
-        infoWriter.append(String.format("%08d",Integer.parseInt(x))+'\n');//formats to 8bits
+        infoWriter.append(String.format("%08d",Integer.parseInt(x)));//formats to 8bits
+        infoWriter.newLine();
       }
       for(int i= ext.length; i<5; i++){
         infoWriter.append("00000000");
@@ -85,16 +91,19 @@ public class Message {
       // Encoding the message
       String line;
       while((line=reader.readLine())!=null){
+        //System.out.println(line);
         byte[] bin =null;
         bin = line.getBytes("UTF-8");
             for (byte b : bin ) {
+              //System.out.println(Integer.toBinaryString(b));
           String x = Integer.toBinaryString(b);
-          textWriter.append(String.format("%08d",Integer.parseInt(x)));//formats to 8bits
+          textWriter.append(String.format("%8s",x).replace(' ', '0'));//formats to 8bits
           textWriter.newLine();
         }
         textWriter.append("00001010");
         textWriter.newLine();
       }
+      reader.close();
       textWriter.close();
     }catch (IOException e) {
       System.out.println("File not found!");

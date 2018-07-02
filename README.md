@@ -17,13 +17,18 @@
     - If we encode a image, we could use the next 2 pixels for the height and the next 2 for the width of the image
   - The secret message will be encoded from the pixel (1,0) onward
   - (This assumes that the encoded picture width is atleast 16-18 pixels)
+  - Tested working document formats :
+      - WORKING .txt, .log, (any plain text file format (.java, .py .cpp...)) .xml .rtf (includes rich text formatting)
+      - KIND OF working : .doc (depending on the amount of editing...).
+      - NOT working : .pdf .docx
 
 ### Issues:
-  - Issue with encoding UTF-8 documents (only works with ASCII text documents)
+  - ~~Issue with encoding UTF-8 documents (only works with ASCII text documents)~~ Fixed
   - Only works on png and bmp files. We can encode a jpeg only if the encoded output image is saved as a png or a bmp (not a jpeg). gif encoding and decoding not yet supported
 
 ### TODO :
   - Crypting the message before encoding
   - Encoding images inside an image
   - GUI (using JAVAFx)
+
  
