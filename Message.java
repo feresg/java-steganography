@@ -2,13 +2,12 @@ import java.io.File;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.FileWriter;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Scanner ;
-import java.io.UnsupportedEncodingException;
-import java.io.InputStreamReader;
 import java.io.FileInputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStreamReader;
+import java.util.Scanner;
+import java.io.IOException;
+
+import java.nio.charset.Charset;
 
 /* Class Message is responsible for handling users input and processing the text.
    Methods: set_input(): takes text input from user.
@@ -33,26 +32,23 @@ public class Message {
   public void convert_input() throws IOException{
     text = new File(filename);
     BufferedWriter writer = new BufferedWriter(new FileWriter("text")); //buffer to write to file
-    BufferedWriter infoWriter = new BufferedWriter(new FileWriter("info")); // buffer to write to info file
       // Adding to info file extension (plain text doc => no extension)
-      for(int i=0; i<5; i++){
-        infoWriter.append("00000000");
-        infoWriter.newLine();
-      }
+      writer.append("00000000");
+      writer.newLine();
     // Adding to text file message size (in 24 bits)
     String msg_length = String.format("%24s", Integer.toBinaryString(msg.length())).replace(' ', '0');
     for (int i=0; i<24; i+=8){
-      infoWriter.append(msg_length.substring(i, i+8));
-      infoWriter.newLine();
+      writer.append(msg_length.substring(i, i+8));
+      writer.newLine();
     }
-    infoWriter.close();
-
     byte[] bin = null;
-    bin = msg.getBytes("UTF-8");//converts the string to Bytes
+    bin = msg.getBytes(Charset.forName("UTF-8"));//converts the string to Bytes
     for (byte b : bin ) {
       String x = Integer.toBinaryString(b);
-      writer.append(String.format("%08d",Integer.parseInt(x))+'\n'); //format charachter to 8bits
-    }
+      String y = String.format("%8s",x).replace(' ','0');
+      writer.append(y.substring(y.length()-8,y.length()));//formats to 8bits
+      writer.newLine();
+}
     writer.close();
   }
 
@@ -63,50 +59,45 @@ public class Message {
 
       BufferedReader reader = new BufferedReader(streamReader);//reads the user file
 
-      BufferedWriter textWriter = new BufferedWriter(new FileWriter("text")); //buffer to write to file
-
-      BufferedWriter infoWriter = new BufferedWriter(new FileWriter("info")); // buffer to write to info file
+      BufferedWriter writer = new BufferedWriter(new FileWriter("text")); //buffer to write to file
 
       // Adding to info file extension (plain text doc => no extension)
       String file_ext = Helpers.getFileExtension(filepath);
       byte [] ext = null;
-      ext = file_ext.getBytes();
+      ext = file_ext.getBytes(Charset.forName("UTF-8"));
       for (byte e:ext){
         String x = Integer.toBinaryString(e);
-        infoWriter.append(String.format("%08d",Integer.parseInt(x)));//formats to 8bits
-        infoWriter.newLine();
+        writer.append(String.format("%08d",Integer.parseInt(x)));//formats to 8bits
+        writer.newLine();
       }
-      for(int i= ext.length; i<5; i++){
-        infoWriter.append("00000000");
-        infoWriter.newLine();
-      }
+      writer.append("00000000");
+      writer.newLine();
       File doc = new File(filepath);
       // Adding to text file message size (in 24 bits)
       String file_length = String.format("%24s", Long.toBinaryString(doc.length())).replace(' ', '0');
       for (int i=0; i<24; i+=8){
-        infoWriter.append(file_length.substring(i, i+8));
-        infoWriter.newLine();
+        writer.append(file_length.substring(i, i+8));
+        writer.newLine();
       }
-      infoWriter.close();
       // Encoding the message
       String line;
       while((line=reader.readLine())!=null){
-        //System.out.println(line);
         byte[] bin =null;
-        bin = line.getBytes("UTF-8");
+        bin = line.getBytes(Charset.forName("UTF-8"));
             for (byte b : bin ) {
               //System.out.println(Integer.toBinaryString(b));
-          String x = Integer.toBinaryString(b);
-          textWriter.append(String.format("%8s",x).replace(' ', '0'));//formats to 8bits
-          textWriter.newLine();
-        }
-        textWriter.append("00001010");
-        textWriter.newLine();
+              String x = Integer.toBinaryString(b);
+              String y = String.format("%8s",x).replace(' ','0');
+              writer.append(y.substring(y.length()-8,y.length()));//formats to 8bits
+              writer.newLine();
+            }
+        writer.append("00001010");
+        writer.newLine();
       }
       reader.close();
-      textWriter.close();
+      writer.close();
     }catch (IOException e) {
-      System.out.println("File not found!");
+      System.out.println(e.getMessage());
     }
 
   }

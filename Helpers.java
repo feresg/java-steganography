@@ -10,5 +10,4 @@ public class Helpers{
             return res;
         return res+='.'+extension;
     }
-
 }
