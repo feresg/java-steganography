@@ -29,7 +29,6 @@
 
 ### TODO :
   - Adding image encoding to project
-  - Crypting the message before encoding
   - Refactoring project
   - GUI (using JavaFX)
 
