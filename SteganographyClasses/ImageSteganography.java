@@ -42,7 +42,7 @@ public class ImageSteganography extends BaseSteganography{
         String header = "";
         String extension = Helpers.getFileExtension(file).toLowerCase();
         List<String> imageExtensions = Arrays.asList("png","bmp","jpg","jpeg");
-        if(imageExtensions.contains(extensions)){
+        if(imageExtensions.contains(extension)){
             header += "I!"+extension+"!";
             BufferedImage bimg = ImageIO.read(file);
             header += bimg.getWidth()+"!"+bimg.getHeight()+"!!";
