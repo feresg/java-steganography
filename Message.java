@@ -16,20 +16,16 @@ import java.nio.charset.Charset;
 */
 
 public class Message {
-  String msg; //Holds input.
-  String filepath;//Hold filepath
 
   public String filename= "./text";//filename we write to.
   public File text;
 
   //constructor.
   public Message(){
-    msg = "";
-
   }
 
 //convert the text input to a binary file.
-  public void convert_input() throws IOException{
+  public void convert_input(String msg) throws IOException{
     text = new File(filename);
     BufferedWriter writer = new BufferedWriter(new FileWriter("text")); //buffer to write to file
       // Adding to info file extension (plain text doc => no extension)
@@ -53,16 +49,16 @@ public class Message {
   }
 
 //convert the document input to a binary file
-  public void convert_document() throws IOException{
+  public void convert_document(File file) throws IOException{
     try {
-      InputStreamReader streamReader = new InputStreamReader(new FileInputStream(filepath));
+      InputStreamReader streamReader = new InputStreamReader(new FileInputStream(file));
 
       BufferedReader reader = new BufferedReader(streamReader);//reads the user file
 
       BufferedWriter writer = new BufferedWriter(new FileWriter("text")); //buffer to write to file
 
       // Adding to info file extension (plain text doc => no extension)
-      String file_ext = Helpers.getFileExtension(filepath);
+      String file_ext = Helpers.getFileExtension(file);
       byte [] ext = null;
       ext = file_ext.getBytes(Charset.forName("UTF-8"));
       for (byte e:ext){
@@ -72,9 +68,8 @@ public class Message {
       }
       writer.append("00000000");
       writer.newLine();
-      File doc = new File(filepath);
       // Adding to text file message size (in 24 bits)
-      String file_length = String.format("%24s", Long.toBinaryString(doc.length())).replace(' ', '0');
+      String file_length = String.format("%24s", Long.toBinaryString(file.length())).replace(' ', '0');
       for (int i=0; i<24; i+=8){
         writer.append(file_length.substring(i, i+8));
         writer.newLine();
@@ -101,32 +96,36 @@ public class Message {
     }
 
   }
-  public void set_input(){
-    System.out.println("\n Enter the message you wish to hide:\n     ");
+  public String set_input(){
+    String msg = "";
+    System.out.println("\nEnter the message you wish to hide :\n");
     Scanner scan = new Scanner(System.in);
     msg = scan.nextLine();
+    return msg;
   }
-  public void set_document (){
-    System.out.println("\n Enter the file path: ");
-      Scanner scan = new Scanner(System.in);
-      filepath = scan.nextLine();
-  }
-  public void choose() throws IOException{
-    int m ;
-    System.out.println("\n  1) Enter text");
-    System.out.println("\n  2) Enter a file");
+  public String set_document (){
+    String filepath;
+    System.out.println("\nEnter the file path :\n");
     Scanner scan = new Scanner(System.in);
-    m = scan.nextInt();
-    if (m == 1) {
-      set_input();
-      convert_input();
-    }else if (m == 2){
-      set_document();
-      convert_document();
-
-    }else{
-      System.out.println("Invalid choice!");
-    }
+    filepath = scan.nextLine();
+    return filepath;
   }
+  // public void choose() throws IOException{
+  //   int m ;
+  //   System.out.println("\n  1) Enter text");
+  //   System.out.println("\n  2) Enter a file");
+  //   Scanner scan = new Scanner(System.in);
+  //   m = scan.nextInt();
+  //   if (m == 1) {
+  //     set_input();
+  //     convert_input();
+  //   }else if (m == 2){
+  //     set_document();
+  //     convert_document();
+
+  //   }else{
+  //     System.out.println("Invalid choice!");
+  //   }
+  // }
 
 }

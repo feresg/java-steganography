@@ -42,7 +42,7 @@ public class Image {
   //image path
   public void set_image_path(){
     Scanner scan = new Scanner(System.in);
-    System.out.println("Enter the path of the image.\n");
+    System.out.println("\nEnter the path of the image :\n");
     path = scan.next();
     ext = Helpers.getFileExtension(path);
   }
@@ -143,10 +143,7 @@ public class Image {
       String outputFileName = Helpers.setOutputFilename(file_ext);
       File msg = new File(outputFileName);
       FileOutputStream fos = new FileOutputStream(msg);
-
-      byte[] bytes = new byte[msg_len];
       int k=0;
-
       do{
         String char_bin = "";
         int [] leftData = get_pixel(secret_img, i, j);
@@ -200,39 +197,42 @@ public class Image {
     img.setRGB(y,x,i);
   }
 
-  public void choose() throws IOException{
-    Message message = new Message();
-    int m ;
-    do{
-      System.out.println("\n  1) Encode Image");
-      System.out.println("\n  2) Decode Image");
-      System.out.println("\n  0) Quit");
-      Scanner scan = new Scanner(System.in);
-      m = scan.nextInt();
-      if (m == 1) {
-        message.choose();
-        set_image_path();
-        if(ext.equals("gif")){
-          System.out.println("GIF ENCODING");
-          encode_gif();
-        }else{
-          encode();
-        }
-      }else if (m == 2){
-        set_image_path();
-        if(ext.equals("gif")){
-          System.out.println("DECODE GIF");
-          decode_gif();
-        }else{
-          decode();
-        }
-      }else if (m==0){
-        System.out.println("Goodbye!");
-      }else{
-        System.out.println("Invalid Choice");
-      }
-    } while(m!=0);
-  }
+  // public void choose() throws IOException{
+  //   Message message = new Message();
+  //   int m ;
+  //   do{
+  //     System.out.println("\n  1) Encode Image");
+  //     System.out.println("\n  2) Decode Image");
+  //     System.out.println("\n  0) Quit");
+  //     Scanner scan = new Scanner(System.in);
+  //     m = scan.nextInt();
+  //     scan.close();
+  //     if (m == 1) {
+  //       message.choose();
+  //       set_image_path();
+  //       if(ext.equals("gif")){
+  //         System.out.println("GIF ENCODING");
+  //         encode_gif();
+  //       }else{
+  //         encode();
+  //       }
+  //       File text = new File("./text");
+  //       text.delete();
+  //     }else if (m == 2){
+  //       set_image_path();
+  //       if(ext.equals("gif")){
+  //         System.out.println("DECODE GIF");
+  //         decode_gif();
+  //       }else{
+  //         decode();
+  //       }
+  //     }else if (m==0){
+  //       System.out.println("Goodbye!");
+  //     }else{
+  //       System.out.println("Invalid Choice");
+  //     }
+  //   } while(m!=0);
+  // }
   /**
    * Steps :
    *  1/ Turn gif into array of BufferedImages
@@ -265,7 +265,7 @@ public class Image {
         WritableRaster raster = frames[index].getRaster();
         int array_pixels [] = new int [4];
         for (int l=0;l<8;l++){
-          System.out.println(i +","+(j+l));
+          //System.out.println(i +","+(j+l));
           raster.getPixel(j+l,i,array_pixels);
           String current_pixel = String.format("%8s", Integer.toBinaryString(array_pixels[0])).replace(' ','0');
           //System.out.println("BEFORE : "+current_pixel);
@@ -274,8 +274,6 @@ public class Image {
           array_pixels[0] = Integer.parseInt(new_pixel, 2);
           raster.setPixel(j+l,i,array_pixels);
         }
-
-        System.out.println("--------");
 
         j+=8;
         if(j>width-8){
@@ -288,6 +286,7 @@ public class Image {
           index++;
         }
       }
+      reader.close();
      //Turns gif into frames (encoded0.png , encoded1.png ...)
       // for (int z=0; z<frames.length;z++){
       //   System.out.println(frames[z].getColorModel());
