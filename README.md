@@ -7,10 +7,6 @@
    - Help and Guide: see comments.
 
 ### Notes:
-  - Each caracter will be encoded on 2 pixels :
-    - (R, G) of pixel (i, j)
-    - (G, B) of pixel (i, width - 1 - j)
-    - We encode the two least significant bits
   - Tested working document formats :
       - WORKING .txt, .log, (any plain text file format (.java, .py .cpp...)) .xml .rtf (includes rich text formatting)
       - KIND OF working : .doc (depending on the amount of editing...)
@@ -26,3 +22,5 @@
   - Refactoring project
   - GUI (using JavaFX)
 
+### GUI :
+  ![alt text](https://raw.githubusercontent.com/feres/java-steganography/master/testFiles/screenshot.png)

@@ -14,8 +14,8 @@ public class Index
   private static final String MAIN_MESSAGE = "\n*** Steganography Application ***";
   private static final String MAIN_OPTIONS = "\n\t1/ Encode Image\n\t2/ Decode Image\n\t0/ Quit";
   private static final String ENCODE_OPTIONS = "\n\t1/ Encode Input\n\t2/ Encode Document\n\t3/ Encode Image";
-  private static final String ENCRYPT_OPTIONS = "\nAdd Encryption? [1/0]";
-  private static final String ENCRYPT_MESSAGE = "\nEnter Encryption Password :\n";
+  private static final String ENCRYPT_OPTIONS = "\nAdd Encryption? [1/0]\t";
+  private static final String ENCRYPT_MESSAGE = "\nEnter Encryption Password :\t";
   private static final String CHOICE_ERROR = "Invalid Choice!";
   private static final String EXIT_MESSAGE = "Goodbye!";
 
@@ -81,11 +81,11 @@ public class Index
   private static String encryption(){
     int encryptOpt;
     String password;
-    System.out.println(ENCRYPT_OPTIONS);
+    System.out.print(ENCRYPT_OPTIONS);
     encryptOpt = scan.nextInt();
     scan.nextLine();
     if(encryptOpt == 1){
-      System.out.println(ENCRYPT_MESSAGE);
+      System.out.print(ENCRYPT_MESSAGE);
       password = scan.nextLine();
       return password;
     }

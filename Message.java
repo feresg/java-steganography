@@ -17,7 +17,7 @@ import java.nio.charset.Charset;
 
 public class Message {
 
-  public String filename= "./text";//filename we write to.
+  public String filename= "./.text";//filename we write to.
   public File text;
 
   //constructor.
@@ -98,14 +98,14 @@ public class Message {
   }
   public String set_input(){
     String msg = "";
-    System.out.println("\nEnter the message you wish to hide :\n");
+    System.out.println("Enter the message you wish to hide :");
     Scanner scan = new Scanner(System.in);
     msg = scan.nextLine();
     return msg;
   }
   public String set_document (){
     String filepath;
-    System.out.println("\nEnter the file path :\n");
+    System.out.print("Enter the file path :\t");
     Scanner scan = new Scanner(System.in);
     filepath = scan.nextLine();
     return filepath;

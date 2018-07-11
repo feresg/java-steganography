@@ -42,7 +42,7 @@ public class Image {
   //image path
   public void set_image_path(){
     Scanner scan = new Scanner(System.in);
-    System.out.println("\nEnter the path of the image :\n");
+    System.out.print("Enter the path of the image :\t");
     path = scan.next();
     ext = Helpers.getFileExtension(path);
   }
@@ -99,6 +99,7 @@ public class Image {
       System.out.println("Message hidden inside encoded."+ext);
     } catch(IOException e){
       System.out.println("Image Not Found!");
+      throw e;
     }
   }
   public void decode() throws IOException{
@@ -274,7 +275,6 @@ public class Image {
           array_pixels[0] = Integer.parseInt(new_pixel, 2);
           raster.setPixel(j+l,i,array_pixels);
         }
-
         j+=8;
         if(j>width-8){
           j=0;
@@ -299,7 +299,7 @@ public class Image {
 
       ColorModel cm = frames[0].getColorModel();
       ImageTypeSpecifier imageType = new ImageTypeSpecifier(cm, cm.createCompatibleSampleModel(1, 1));
-      GifSequenceWriter writer = new GifSequenceWriter(output, imageType, delay, true);
+      GifSequenceWriter writer = new GifSequenceWriter(output, imageType,delay, true);
       for(int k=0; k<frames.length; k++) {
         writer.writeToSequence(frames[k], metadatas[k]);
       }

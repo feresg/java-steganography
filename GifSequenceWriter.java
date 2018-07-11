@@ -1,4 +1,3 @@
-package gif;
 //
 //  GifSequenceWriter.java
 //
@@ -57,7 +56,7 @@ public class GifSequenceWriter {
       int timeBetweenFramesMS,
       boolean loopContinuously) throws IIOException, IOException {
     // my method to create a writer
-    gifWriter = getWriter(); 
+    gifWriter = getWriter();
     imageWriteParam = gifWriter.getDefaultWriteParam();
 
     imageMetaData =

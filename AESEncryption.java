@@ -34,7 +34,7 @@ public class AESEncryption {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         }catch (Exception e){
-            System.out.println("Error while encrypting: " + e.toString());
+            System.out.println("Error while encrypting: " + e.getMessage());
         }
         return null;
     }
@@ -54,7 +54,7 @@ public class AESEncryption {
             fos.close();
             return output;
         }catch(Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
+            System.out.println("Error while encrypting: " + e.getMessage());
         }
         return null;
     }
@@ -65,16 +65,16 @@ public class AESEncryption {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         }catch (Exception e){
-            System.out.println("Error while decrypting: " + e.toString());
+            System.out.println("Error while decrypting: " + e.getMessage());
         }
         return null;
     }
-    public static File decrypt(File input, String secret, String filename){
+    public static File decrypt(File input, String secret){
         try{
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
-            File output = new File(filename);
+            File output = new File("decrypted_"+input.getName());
             FileInputStream fis = new FileInputStream(input);
             byte[] inputBytes = new byte[(int) input.length()];
             fis.read(inputBytes);
@@ -85,7 +85,7 @@ public class AESEncryption {
             fos.close();
             return output;
         }catch(Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
+            System.out.println("Error while decrypting: " + e.getMessage());
         }
         return null;
     }
