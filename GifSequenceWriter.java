@@ -9,12 +9,6 @@
 // http://creativecommons.org/licenses/by/3.0/ or send a letter to Creative
 // Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
 
-
-// import javax.imageio.*;
-// import javax.imageio.metadata.*;
-// import javax.imageio.stream.*;
-// import java.awt.image.*;
-// import java.io.*;
 import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadata;
@@ -28,8 +22,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageWriter;
 import javax.imageio.IIOImage;
 import java.awt.image.RenderedImage;
-
-
 import java.io.IOException;
 import java.util.Iterator;
 

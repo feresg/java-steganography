@@ -16,12 +16,11 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.metadata.IIOMetadataNode;
-import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.metadata.IIOMetadata;
 
 public class GifSteganography extends BaseSteganography{
