@@ -23,4 +23,4 @@
   - GUI (using JavaFX)
 
 ### GUI :
-  ![alt text](https://raw.githubusercontent.com/feres/java-steganography/master/testFiles/screenshot.png)
+  ![alt text](https://github.com/feresg/java-steganography/raw/master/testFiles/Screenshot.png)
