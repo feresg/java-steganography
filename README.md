@@ -13,12 +13,10 @@
       - NOT working : .pdf .docx
 
 ### Issues:
-
   - Only works on png and bmp files. We can encode a jpeg only if the encoded output image is saved as a png or a bmp (not a jpeg)
   - gif encoding optimised for smaller messages
 
 ### TODO :
-  - Adding image encoding to project
   - Refactoring project
   - GUI (using JavaFX)
 
