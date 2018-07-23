@@ -8,6 +8,7 @@
 // License. To view a copy of this license, visit
 // http://creativecommons.org/licenses/by/3.0/ or send a letter to Creative
 // Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
+package Steganography.Logic;
 
 import java.util.Iterator;
 import javax.imageio.ImageIO;
@@ -16,14 +17,11 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.ImageOutputStream;
-import javax.imageio.stream.ImageInputStream;
 import javax.imageio.IIOException;
-import javax.imageio.ImageReader;
 import javax.imageio.ImageWriter;
 import javax.imageio.IIOImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
-import java.util.Iterator;
 
 
 public class GifSequenceWriter {

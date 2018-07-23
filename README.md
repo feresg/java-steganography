@@ -3,7 +3,6 @@
 ### Project: Steganography
    - Description: Hide a text or an image inside an image.
    - Authors: Ilyes Hamrouni, Feres Gaaloul.
-   - Usage: Temporarily, use terminal, "java Index".
    - Help and Guide: see comments.
 
 ### Notes:
@@ -17,8 +16,5 @@
   - gif encoding optimised for smaller messages
 
 ### TODO :
-  - Refactoring project
-  - GUI (using JavaFX)
 
 ### GUI :
-  ![alt text](https://github.com/feresg/java-steganography/raw/master/testFiles/Screenshot.png)

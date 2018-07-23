@@ -1,3 +1,5 @@
+package Steganography.Logic;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,13 +10,14 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Scanner;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-public class ImageSteganography extends BaseSteganography{
+public class ImageSteganography extends BaseSteganography {
     protected BufferedImage image;
+    int i=0,j=0;
+    byte newLine = 10;
+
     // Constructors
     public ImageSteganography(File input, boolean isEncrypted) throws IOException{
         this.isEncrypted = isEncrypted;
@@ -22,92 +25,76 @@ public class ImageSteganography extends BaseSteganography{
         this.capacity = this.image.getHeight()*this.image.getWidth();
     }
     public ImageSteganography(File input) throws IOException{
-        this.isEncrypted = false;
-        this.image = ImageIO.read(input);
-        this.capacity = this.image.getHeight()*this.image.getWidth();
+        this(input, false);
     }
     public BufferedImage getImage(){
         return this.image;
     }
-    public void writeHeader(byte[] header){
-        int i=0, j=0;
+    protected void writeHeader(byte[] header){
         for(byte b : header){
             this.image.setRGB(j,i,hidePixel(this.image.getRGB(j,i),b));
-            increment(i,j);
+            increment();
         }
     }
     public byte[] getHeader(){
-        int i=0, j=0;
-        byte b;
+        reset();
+        int b;
         List<Byte> header = new ArrayList<Byte>();
         do{
-            b = revealPixel(this.image.getRGB(j,i));
-            header.add(b);
+            b = this.revealPixel(this.image.getRGB(j,i));
+            increment();
+            header.add((byte)b);
+
         }while(b != (byte) '!');
         return Helpers.toByteArray(header);
     }
-    public void encode(String str) throws IOException{
+    public void encode(String str, File output) throws IOException{
         try{
             this.writeHeader(this.setHeader(str));
-            int i=(this.header.length)%(this.image.getWidth());
-            int j=(this.header.length)/(this.image.getWidth());
             byte[] message = str.getBytes(Charset.forName("UTF-8"));
             for (byte b : message){
                 this.image.setRGB(j,i,hidePixel(this.image.getRGB(j,i),b));
-                increment(i,j);
+                increment();
             }
-            File img = new File("encoded.png");
-            ImageIO.write(this.image, "png", img);
-            System.out.println("Message hidden inside encoded.png");
+            ImageIO.write(this.image, "png", output);
         }catch(Exception e) {System.out.println("Encoding Error : "+ e.getMessage());}
     }
-    public void encode(File doc) throws IOException{
+    public void encode(File doc, File output) throws IOException{
         try{
             this.writeHeader(this.setHeader(doc));
-            int i=(this.header.length)%(this.image.getWidth());
-            int j=(this.header.length)/(this.image.getWidth());
+            System.out.println("i: "+i+" j: "+j);
             String line;
-            this.writeHeader(this.setHeader(doc));
             InputStreamReader stream = new InputStreamReader(new FileInputStream(doc));
             BufferedReader reader = new BufferedReader(stream);//reads the user file
             while((line = reader.readLine()) != null){
                 byte[] message = line.getBytes(Charset.forName("UTF-8"));
                 for (byte b : message){
-                    this.image.setRGB(j,i,hidePixel(this.image.getRGB(j,i),b));
-                    increment(i,j);
+                  this.image.setRGB(j,i,hidePixel(this.image.getRGB(j,i),b));
+                  increment();
                 }
-                this.image.setRGB(j,i,hidePixel(this.image.getRGB(j,i),Byte.parseByte("00001010",2))); // Adds new line caracter
+                this.image.setRGB(j,i,hidePixel(this.image.getRGB(j,i),newLine)); // Adds new line caracter
+                increment();
             }
             reader.close();
             stream.close();
-            File eimg = new File("encoded.png");
-            ImageIO.write(this.image, "png", eimg);
-            System.out.println("File hidden inside encoded.png");
+            ImageIO.write(this.image, "png", output);
         }catch(Exception e) {System.out.println("Encoding Error : "+ e.getMessage());}
     }
-    public void decode() throws IOException {
+    public void decode(File file) throws IOException {
+        reset();
         try{
-            byte[] header = this.getHeader();
-            Map<String, String> attributes = this.getAttributes(header);
-            File file = new File("secret."+attributes.get("extension"));
+            Map<String, String> attributes = this.getAttributes(this.getHeader());
             int length = Integer.parseInt(attributes.get("length"));
             FileOutputStream fos = new FileOutputStream(file);
-            int i=(header.length)%(this.image.getWidth());
-            int j=(header.length)/(this.image.getWidth());
             int pos = 0;
+            int b;
             do{
-                byte b = revealPixel(this.image.getRGB(j,i));
+                b = revealPixel(this.image.getRGB(j,i));
                 fos.write(b);
                 pos++;
+                increment();
             }while(pos<length);
             fos.close();
-            if(attributes.get("encryption").equals('E')){
-                // Temporary
-                System.out.print("Enter Password :\t");
-                Scanner scan = new Scanner(System.in);
-                String password = scan.nextLine();
-                file = AESEncryption.decrypt(file, password);
-            }
             System.out.println("Secret file saved to "+ file.getName());
         }catch(Exception e) {System.out.println("Decoding Error : "+ e.getMessage());}
     }
@@ -116,7 +103,7 @@ public class ImageSteganography extends BaseSteganography{
         int pixel = pixelA;
         String pixelB = String.format("%8s",Integer.toBinaryString(data)).replace(' ','0');
         pixelB = pixelB.substring(pixelB.length()-8, pixelB.length());
-        System.out.println("pixelB: "+pixelB);
+        //System.out.println("pixelB: "+pixelB);
         //coding the 8 bits charachter (pixelB) in one pixel as follows;
         //3 bits in red , 3 bits in green, 2 bits in blue
         //coding 3 bits in red
@@ -129,8 +116,8 @@ public class ImageSteganography extends BaseSteganography{
     }
 
     //recover hidden bits in pixel
-    private byte revealPixel(int pixel){
-        byte b;
+    private int revealPixel(int pixel){
+        int y;
         //opposite of hidePixel;
         String str="";
         int x = (pixel & 0x00070000)>>>16;
@@ -139,15 +126,18 @@ public class ImageSteganography extends BaseSteganography{
         str += String.format("%3s",Integer.toBinaryString(x)).replace(' ','0');
         x = (pixel & 0x00000003);
         str += String.format("%2s",Integer.toBinaryString(x)).replace(' ','0');
-        b = Byte.parseByte(str, 2);
-        return b;
+        y = Integer.parseInt(str, 2);
+        return y;
     }
-    protected void increment(int i,int j){
-        System.out.println("I: "+i+"  J: "+j);
-        j++;
-        if(j==this.image.getWidth()-1){
-            j=0;
-            i++;
+    private void increment(){
+        this.j++;
+        if(this.j==this.image.getWidth()-1){
+            this.j=0;
+            this.i++;
         }
+    }
+    private void reset(){
+      this.i=0;
+      this.j=0;
     }
 }

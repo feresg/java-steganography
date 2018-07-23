@@ -1,0 +1,12 @@
+#secretDocumentContent{
+    -fx-background-color: transparent;
+}
+
+#secretDocumentContent .list-cell:even {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+#secretDocumentContent .list-cell:odd {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
