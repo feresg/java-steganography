@@ -1,22 +1,25 @@
 package Steganography.Logic;
 
+import Steganography.Modals.AlertBox;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 
 public class ImageSteganography extends BaseSteganography {
-    protected BufferedImage image;
-    int i=0,j=0;
-    byte newLine = 10;
+
+    BufferedImage image;
+    private int i=0;
+    private int j=0;
 
     // Constructors
     public ImageSteganography(File input, boolean isEncrypted) throws IOException{
@@ -24,22 +27,23 @@ public class ImageSteganography extends BaseSteganography {
         this.image = ImageIO.read(input);
         this.capacity = this.image.getHeight()*this.image.getWidth();
     }
-    public ImageSteganography(File input) throws IOException{
-        this(input, false);
-    }
+    public ImageSteganography(File input) throws IOException{ this(input, false); }
+
     public BufferedImage getImage(){
         return this.image;
     }
-    protected void writeHeader(byte[] header){
+
+    void writeHeader(byte[] header){
         for(byte b : header){
             this.image.setRGB(j,i,hidePixel(this.image.getRGB(j,i),b));
             increment();
         }
     }
+
     public byte[] getHeader(){
         reset();
         int b;
-        List<Byte> header = new ArrayList<Byte>();
+        List<Byte> header = new ArrayList<>();
         do{
             b = this.revealPixel(this.image.getRGB(j,i));
             increment();
@@ -48,7 +52,8 @@ public class ImageSteganography extends BaseSteganography {
         }while(b != (byte) '!');
         return Helpers.toByteArray(header);
     }
-    public void encode(String str, File output) throws IOException{
+
+    public void encode(String str, File output){
         try{
             this.writeHeader(this.setHeader(str));
             byte[] message = str.getBytes(Charset.forName("UTF-8"));
@@ -57,12 +62,13 @@ public class ImageSteganography extends BaseSteganography {
                 increment();
             }
             ImageIO.write(this.image, "png", output);
-        }catch(Exception e) {System.out.println("Encoding Error : "+ e.getMessage());}
+            System.out.println("Message hidden inside "+output.getName());
+        }catch(IOException e) {e.printStackTrace(); AlertBox.error("Error while encoding", e.getMessage());}
     }
-    public void encode(File doc, File output) throws IOException{
+
+    public void encode(File doc, File output){
         try{
             this.writeHeader(this.setHeader(doc));
-            System.out.println("i: "+i+" j: "+j);
             String line;
             InputStreamReader stream = new InputStreamReader(new FileInputStream(doc));
             BufferedReader reader = new BufferedReader(stream);//reads the user file
@@ -78,16 +84,21 @@ public class ImageSteganography extends BaseSteganography {
             reader.close();
             stream.close();
             ImageIO.write(this.image, "png", output);
-        }catch(Exception e) {System.out.println("Encoding Error : "+ e.getMessage());}
+            System.out.println("File hidden inside "+output.getName());
+        }catch(IOException e) {
+            e.printStackTrace();
+            AlertBox.error("Error while encoding", e.getMessage());
+        }
     }
-    public void decode(File file) throws IOException {
+
+    public void decode(File file){
         reset();
+        Map<String, String> attributes = this.getAttributes(this.getHeader());
+        int length = Integer.parseInt(attributes.get("length"));
+        int pos = 0;
+        int b;
         try{
-            Map<String, String> attributes = this.getAttributes(this.getHeader());
-            int length = Integer.parseInt(attributes.get("length"));
             FileOutputStream fos = new FileOutputStream(file);
-            int pos = 0;
-            int b;
             do{
                 b = revealPixel(this.image.getRGB(j,i));
                 fos.write(b);
@@ -96,15 +107,17 @@ public class ImageSteganography extends BaseSteganography {
             }while(pos<length);
             fos.close();
             System.out.println("Secret file saved to "+ file.getName());
-        }catch(Exception e) {System.out.println("Decoding Error : "+ e.getMessage());}
+        }catch (IOException e) {
+            e.printStackTrace();
+            AlertBox.error("Error while decoding", e.getMessage());}
     }
+
     //hides the bits of pixelB in pixelA
     private int hidePixel(int pixelA, byte data){
         int pixel = pixelA;
         String pixelB = String.format("%8s",Integer.toBinaryString(data)).replace(' ','0');
         pixelB = pixelB.substring(pixelB.length()-8, pixelB.length());
-        //System.out.println("pixelB: "+pixelB);
-        //coding the 8 bits charachter (pixelB) in one pixel as follows;
+        //coding the 8 bits character (pixelB) in one pixel as follows;
         //3 bits in red , 3 bits in green, 2 bits in blue
         //coding 3 bits in red
         pixel = pixel & 0xFFF8FFFF | ((Integer.parseInt(pixelB.substring(0,3),2) & 0x00000007) << 16);//example (1100 & 0011) |(1010 & 0111) = (0010); then shifting to the right place >>
@@ -129,15 +142,12 @@ public class ImageSteganography extends BaseSteganography {
         y = Integer.parseInt(str, 2);
         return y;
     }
+
     private void increment(){
         this.j++;
-        if(this.j==this.image.getWidth()-1){
-            this.j=0;
-            this.i++;
-        }
+        if(this.j==this.image.getWidth()-1){ this.j=0;this.i++; }
     }
-    private void reset(){
-      this.i=0;
-      this.j=0;
-    }
+
+    private void reset(){ this.i=0;this.j=0; }
+
 }

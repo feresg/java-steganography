@@ -1,25 +1,39 @@
 package Steganography;
 
+import Steganography.Logic.AESEncryption;
+import Steganography.Logic.BaseSteganography;
+import Steganography.Logic.GifSteganography;
+import Steganography.Logic.ImageInImageSteganography;
+import Steganography.Logic.ImageSteganography;
+import Steganography.Logic.Helpers;
+
+import Steganography.Modals.AboutPage;
+import Steganography.Modals.AlertBox;
+import Steganography.Modals.DocumentViewer;
+import Steganography.Modals.PasswordPrompt;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
-
-import Steganography.Logic.*;
-import Steganography.Modals.*;
-
 
 public class Controller {
     // Used Items
     @FXML
-    private MenuItem newSecretDocument, newSecretImage, newSteganographicImage, aboutPage, quitApp;
+    private MenuItem newSecretDocument, newSecretImage;
     @FXML
     private ImageView secretImageView, coverImageView, steganographicImageView;
     @FXML
@@ -38,6 +52,7 @@ public class Controller {
     private File coverImage, secretImage, secretDocument, steganographicImage, tempFile;
     // Password
     private String password;
+
     public void setCoverImage(ActionEvent event){
         FileChooser fc = new FileChooser();
         fc.setTitle("New Cover Image...");
@@ -59,9 +74,10 @@ public class Controller {
             secretImageTab.setDisable(Helpers.getFileExtension(coverImage).toLowerCase().equals("gif"));
 
         } else{
-            System.out.println("Error Adding Cover Image...");
+            AlertBox.error("Error while setting cover image", "Try again...");
         }
     }
+
     public void setSteganographicImage(ActionEvent event){
         FileChooser fc = new FileChooser();
         fc.setTitle("New Steganographic Image...");
@@ -78,10 +94,10 @@ public class Controller {
             steganographicImagePane.setMaxSize(1440,900);
             decodeImage.setDisable(false);
         }else{
-            System.out.println("Error Adding Steganographic Image...");
+            AlertBox.error("Error while setting steganographic image", "Try again...");
         }
-
     }
+
     public void setSecretDocument(ActionEvent event){
         FileChooser fc = new FileChooser();
         fc.setTitle("New Secret Document...");
@@ -90,11 +106,15 @@ public class Controller {
             encodeDocument.setDisable(false);
             try{
                 DocumentViewer.showSecretDocument(secretDocumentContent, secretDocument);
-            }catch(IOException e) {e.printStackTrace();}
-        }else{
-            System.out.println("Error Adding Secret Document...");
+            }catch(IOException e) {
+                e.printStackTrace();
+                AlertBox.error("Error while setting secret document", e.getMessage());
+            }
+        }else {
+            AlertBox.error("Error while setting secret document", "Try again...");
         }
     }
+
     public void setSecretImage(ActionEvent event){
         FileChooser fc = new FileChooser();
         fc.setTitle("New Secret Image...");
@@ -111,11 +131,11 @@ public class Controller {
             secretImagePane.setMaxSize(900,900);
             encodeImage.setDisable(false);
         } else{
-            System.out.println("Error Adding Secret Image...");
+            AlertBox.error("Error while setting secret image", "Try again...");
         }
     }
+
     public void encodeMessageInImage(ActionEvent event){
-        try{
             String message = secretMessage.getText();
             if(encryptMessage.isSelected()){
                 message = AESEncryption.encrypt(message, password);
@@ -132,18 +152,23 @@ public class Controller {
             steganographicImage = fc.showSaveDialog(null);
             if(steganographicImage != null){
                 BaseSteganography img;
-                if(imageExtension.toLowerCase().equals("gif"))
-                    img = new GifSteganography(coverImage, encryptMessage.isSelected());
-                else
-                    img = new ImageSteganography(coverImage, encryptMessage.isSelected());
-                img.encode(message, steganographicImage);
-                AlertBox.information("Encoding Successful!", "Message encoded successfully in "+steganographicImage.getName()+".", steganographicImage);
+                try{
+                    if(imageExtension.toLowerCase().equals("gif"))
+                        img = new GifSteganography(coverImage, encryptMessage.isSelected());
+                    else
+                        img = new ImageSteganography(coverImage, encryptMessage.isSelected());
+                    img.encode(message, steganographicImage);
+                    AlertBox.information("Encoding Successful!", "Message encoded successfully in "+steganographicImage.getName()+".", steganographicImage);
+                }catch (IOException e){
+                    e.printStackTrace();
+                    AlertBox.error("Error while encoding", e.getMessage());
+                }
             }
-        }catch (Exception e) {e.printStackTrace();}
     }
+
     public void encodeDocumentInImage(ActionEvent event){
+        String secretFileExtension = Helpers.getFileExtension(secretDocument);
         try{
-            String secretFileExtension = Helpers.getFileExtension(secretDocument);
             if(encryptDocument.isSelected()){
                 tempFile = File.createTempFile("encrypted", "."+secretFileExtension);
                 AESEncryption.encrypt(secretDocument, tempFile, password);
@@ -167,79 +192,95 @@ public class Controller {
                 img.encode(secretDocument, steganographicImage);
                 AlertBox.information("Encoding Successful!", "Document encoded successfully in "+steganographicImage.getName()+".", steganographicImage);
             }
-        }catch (Exception e) {e.printStackTrace();}
+        }catch (IOException e) {
+            e.printStackTrace();
+            AlertBox.error("Error while encoding", e.getMessage());
+        }
     }
+
     public void encodeImageInImage(ActionEvent event){
-        try{
-            FileChooser fc = new FileChooser();
-            fc.getExtensionFilters()
-                    .add(new FileChooser.ExtensionFilter(
-                            "PNG Image",
-                            "*.png"));
-            steganographicImage = fc.showSaveDialog(null);
-            if(steganographicImage != null){
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters()
+                .add(new FileChooser.ExtensionFilter(
+                        "PNG Image",
+                        "*.png"));
+        steganographicImage = fc.showSaveDialog(null);
+        if(steganographicImage != null){
+            try{
                 ImageInImageSteganography img = new ImageInImageSteganography(coverImage);
                 img.encode(secretImage, steganographicImage);
                 AlertBox.information("Encoding Successful!", "Image "+secretImage.getName()+" encoded successfully in "+steganographicImage.getName()+".", steganographicImage);
+            }catch (IOException e){
+                e.printStackTrace();
+                AlertBox.error("Error while encoding", e.getMessage());
             }
-        }catch (Exception e) {e.printStackTrace();}
-    }
-    public void decodeImage(ActionEvent event) throws IOException{
-        String imageExtension = Helpers.getFileExtension(steganographicImage);
-        String fileExtension = "";
-        Map<String, String> attributes;
-        FileChooser fc = new FileChooser();
-        File file;
-        BaseSteganography img = (imageExtension.toLowerCase().equals("gif")) ? new GifSteganography(steganographicImage) : new ImageSteganography(steganographicImage);
-        attributes = img.getAttributes(img.getHeader());
-        fileExtension = attributes.get("extension");
-        fc.getExtensionFilters()
-                .add(new FileChooser.ExtensionFilter(
-                        fileExtension.toUpperCase(),
-                        "*."+fileExtension));
-        switch (attributes.get("mode")){
-            case "M":
-                tempFile = File.createTempFile("message",".txt");
-                img.decode(tempFile);
-                String message = new Scanner(tempFile).useDelimiter("\\Z").next();
-                if(attributes.get("encryption").equals("E")){
-                    password = PasswordPrompt.display("decrypt");
-                    message = AESEncryption.decrypt(message, password);
-                }
-                if(message != null && message.length() > 0)
-                    AlertBox.information("Decoding successful!", "Here is the secret message:", message);
-                tempFile.deleteOnExit();
-                break;
-            case "D":
-                file = fc.showSaveDialog(null);
-                img.decode(file);
-                if(attributes.get("encryption").equals("E")){
-                    password = PasswordPrompt.display("decrypt");
-                    AESEncryption.decrypt(file, file, password);
-                }
-                if(file != null && file.length() > 0)
-                    AlertBox.information("Decoding Successful!", "Document decoded in "+file.getName(), file);
-                break;
-            case "I":
-                ImageInImageSteganography imgInImg = new ImageInImageSteganography(steganographicImage);
-                file = fc.showSaveDialog(null);
-                imgInImg.decode(file);
-                AlertBox.information("Decoding Successful!", "Image decoded in "+file.getName(), file);
-                break;
         }
     }
+
+    public void decodeImage(ActionEvent event){
+            String imageExtension = Helpers.getFileExtension(steganographicImage);
+            String fileExtension;
+            Map<String, String> attributes;
+            FileChooser fc = new FileChooser();
+            File file;
+            try{
+                BaseSteganography img = (imageExtension.toLowerCase().equals("gif")) ? new GifSteganography(steganographicImage) : new ImageSteganography(steganographicImage);
+                attributes = img.getAttributes(img.getHeader());
+                fileExtension = attributes.get("extension");
+                fc.getExtensionFilters()
+                        .add(new FileChooser.ExtensionFilter(
+                                fileExtension.toUpperCase(),
+                                "*."+fileExtension));
+                switch (attributes.get("mode")){
+                    case "M":
+                        tempFile = File.createTempFile("message",".txt");
+                        img.decode(tempFile);
+                        String message = new Scanner(tempFile).useDelimiter("\\Z").next();
+                        if(attributes.get("encryption").equals("E")){
+                            password = PasswordPrompt.display("decrypt");
+                            message = AESEncryption.decrypt(message, password);
+                        }
+                        if(message != null && message.length() > 0)
+                            AlertBox.information("Decoding successful!", "Here is the secret message:", message);
+                        tempFile.deleteOnExit();
+                        break;
+                    case "D":
+                        file = fc.showSaveDialog(null);
+                        img.decode(file);
+                        if(attributes.get("encryption").equals("E")){
+                            password = PasswordPrompt.display("decrypt");
+                            AESEncryption.decrypt(file, file, password);
+                        }
+                        if(file != null && file.length() > 0)
+                            AlertBox.information("Decoding Successful!", "Document decoded in "+file.getName(), file);
+                        break;
+                    case "I":
+                        ImageInImageSteganography imgInImg = new ImageInImageSteganography(steganographicImage);
+                        file = fc.showSaveDialog(null);
+                        imgInImg.decode(file);
+                        AlertBox.information("Decoding Successful!", "Image decoded in "+file.getName(), file);
+                        break;
+                }
+            }catch (IOException e) {
+                e.printStackTrace();
+                AlertBox.error("Error while decoding", e.getMessage());
+            }
+    }
+
     public void getEncryptionPassword(ActionEvent event){
         if(encryptMessage.isSelected() || encryptDocument.isSelected()){
             if((password = PasswordPrompt.display("encrypt")) == null) {
                 encryptMessage.setSelected(false); encryptDocument.setSelected(false);
             }
-            System.out.println(password);
         } else {password = null;}
     }
+
     public void showAboutPage(ActionEvent event){
         AboutPage.display(event);
     }
+
     public void quitApp(ActionEvent event){
         System.exit(0);
     }
+
 }

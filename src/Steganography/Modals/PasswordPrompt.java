@@ -40,6 +40,7 @@ public class PasswordPrompt {
         confirmPassText.setPrefWidth(230);
         GridPane.setConstraints(confirmPassText, 1, 1);
 
+        // Error Label
         Label errorLabel = new Label();
         errorLabel.setTextFill(Color.RED);
         GridPane.setConstraints(errorLabel, 1, 2);
@@ -103,10 +104,8 @@ public class PasswordPrompt {
         return password;
     }
 
-
     private static boolean validatePassword(String pass,String confirmPass) {
         boolean isValid = true;
-
         if(pass.equals("") || confirmPass.equals("")) {
             errorLabelText = "Both fields are required."; isValid = false;
         }
@@ -115,4 +114,5 @@ public class PasswordPrompt {
         }
         return isValid;
     }
+
 }

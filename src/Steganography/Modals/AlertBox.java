@@ -26,20 +26,21 @@ public class AlertBox {
         alert.setTitle("Information");
         alert.setHeaderText(header);
         alert.setContentText(content);
+
         ButtonType viewButton = new ButtonType("View");
         ButtonType cancelButton = new ButtonType("Close", ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(viewButton, cancelButton);
+
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == viewButton){
+        if (result.isPresent() && result.get() == viewButton){
             String extension = Helpers.getFileExtension(file);
-            if(extension.matches("png|bmp|jpg|jpeg|gif")){
-                System.out.println("HERE HERE");
+            if(extension.matches("png|bmp|jpg|jpeg|gif"))
                 ImageViewer.display(file);
-            } else{
+            else
                 DocumentViewer.display(file);
-            }
         }
     }
+
     public static void information(String header, String content, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
@@ -63,4 +64,5 @@ public class AlertBox {
         alert.getDialogPane().setExpanded(true);
         alert.showAndWait();
     }
+
 }

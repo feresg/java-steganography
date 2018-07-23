@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-public class ImageViewer {
+class ImageViewer {
 
     public static void display(File image) {
         Stage window = new Stage();
@@ -37,4 +37,5 @@ public class ImageViewer {
         window.setMaxHeight(900);
         window.showAndWait();
     }
+
 }

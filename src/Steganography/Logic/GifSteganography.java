@@ -1,32 +1,32 @@
 package Steganography.Logic;
-import Steganography.Modals.PasswordPrompt;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Scanner;
+import Steganography.Modals.AlertBox;
+
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.stream.ImageOutputStream;
-import javax.imageio.stream.FileImageOutputStream;
-import javax.imageio.metadata.IIOMetadata;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GifSteganography extends BaseSteganography{
+
     private BufferedImage[] frames;
     private IIOMetadata[] metadatas;
     private int delayMS;
     private int i=0,j=0,k=0;
-    byte newLine = 10;
 
     // Constructor
     public GifSteganography(File input, boolean isEncrypted) throws IOException{
@@ -35,23 +35,24 @@ public class GifSteganography extends BaseSteganography{
         this.metadatas = Metadata.getMetadatas(input);
         this.delayMS = Metadata.getDelayMS(input);
     }
-    public GifSteganography(File input) throws IOException{
-        this(input, false);
-    }
+    public GifSteganography(File input) throws IOException{ this(input, false); }
+
     private void writeHeader(byte[] header){
         for(byte b : header)
             hidePixels(b);
     }
+
     public byte[] getHeader(){
         reset();
         int b;
-        List<Byte> header = new ArrayList<Byte>();
+        List<Byte> header = new ArrayList<>();
         do{
             b = revealPixels();
             header.add((byte) b);
         }while(b != (byte) '!');
         return Helpers.toByteArray(header);
     }
+
     public void encode(String str, File output){
         try{
             this.writeHeader(this.setHeader(str));
@@ -66,8 +67,11 @@ public class GifSteganography extends BaseSteganography{
               writer.writeToSequence(this.frames[x], this.metadatas[x]);
             writer.close();
             ios.close();
-            System.out.println("Message hidden inside encoded.gif");
-        }catch(Exception e) {System.out.println("Encoding Error : "+ e.getMessage());}
+            System.out.println("Message hidden inside "+ output.getName());
+        }catch(IOException e) {
+            e.printStackTrace();
+            AlertBox.error("Error while encoding", e.getMessage());
+        }
     }
     public void encode(File doc, File output){
         try{
@@ -85,13 +89,16 @@ public class GifSteganography extends BaseSteganography{
             ColorModel cm = this.frames[0].getColorModel();
             ImageTypeSpecifier imageType = new ImageTypeSpecifier(cm, cm.createCompatibleSampleModel(1, 1));
             GifSequenceWriter writer = new GifSequenceWriter(ios, imageType, this.delayMS, true);
-            for(int x=0; x<this.frames.length; x++) {
+            for(int x=0; x<this.frames.length; x++)
               writer.writeToSequence(this.frames[x], this.metadatas[x]);
-            }
             writer.close();
             ios.close();
-        }catch(Exception e) {System.out.println("Encoding Error : "+ e.getMessage());}
+        }catch(IOException e) {
+            e.printStackTrace();
+            AlertBox.error("Error while encoding", e.getMessage());
+        }
     }
+
     public void decode(File file){
         try{
             reset();
@@ -107,13 +114,18 @@ public class GifSteganography extends BaseSteganography{
             }while(pos<length);
             fos.close();
             System.out.println("Secret file saved to "+ file.getName());
-        }catch(Exception e) {System.out.println("Decryption Error : "+ e.getMessage());}
+        }catch(IOException e) {
+            e.printStackTrace();
+            AlertBox.error("Error while decoding", e.getMessage());
+        }
     }
+
     private int hidePixel(int pixel, char c){
         String before = String.format("%8s", Integer.toBinaryString(pixel)).replace(' ','0');
         String after = before.substring(0,7)+c;
         return Integer.parseInt(after,2);
     }
+
     private void hidePixels(byte b){
         int[] pixel = new int[4];
         String currentByte;
@@ -127,37 +139,30 @@ public class GifSteganography extends BaseSteganography{
             increment();
         }
     }
+
     private byte revealPixels(){
         int pixel[] = new int[4];
         int b;
         String currentByte;
-        String bit = "";
+        StringBuilder bit = new StringBuilder();
         for(int l=0; l<8; l++){
             Raster raster = this.frames[k].getRaster();
             raster.getPixel(j,i,pixel);
             currentByte = String.format("%8s", Integer.toBinaryString(pixel[0])).replace(" ", "0");
             currentByte = currentByte.substring(currentByte.length()-8, currentByte.length());
-            bit += currentByte.charAt(7);
+            bit.append(currentByte.charAt(7));
             increment();
         }
-        b = Integer.parseInt(bit,2);
+        b = Integer.parseInt(bit.toString(),2);
         return (byte) b;
     }
+
     private void increment(){
         this.j++;
-        if(this.j == this.frames[this.k].getWidth()){
-            this.j=0;
-            this.i++;
-        }
-        if(this.i == this.frames[this.k].getHeight()){
-            this.j=0;
-            this.i=0;
-            this.k++;
-        }
+        if(this.j == this.frames[this.k].getWidth()){ this.j=0;this.i++; }
+        if(this.i == this.frames[this.k].getHeight()){ this.j=0;this.i=0;this.k++; }
     }
-    private void reset(){
-        this.i=0;
-        this.j=0;
-        this.k=0;
-    }
+
+    private void reset(){ this.i=0;this.j=0;this.k=0; }
+
 }

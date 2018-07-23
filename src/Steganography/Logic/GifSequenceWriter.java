@@ -10,30 +10,31 @@
 // Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
 package Steganography.Logic;
 
-import java.util.Iterator;
+import javax.imageio.IIOException;
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.ImageOutputStream;
-import javax.imageio.IIOException;
-import javax.imageio.ImageWriter;
-import javax.imageio.IIOImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.util.Iterator;
 
+@SuppressWarnings("Duplicates")
+class GifSequenceWriter {
 
-public class GifSequenceWriter {
-  protected ImageWriter gifWriter;
-  protected ImageWriteParam imageWriteParam;
-  protected IIOMetadata imageMetaData;
+  private ImageWriter gifWriter;
+  private ImageWriteParam imageWriteParam;
+  private IIOMetadata imageMetaData;
 
   /**
    * Creates a new GifSequenceWriter
    *
    * @param outputStream the ImageOutputStream to be written to
-   * @param imageType one of the imageTypes specified in BufferedImage
+   * @param imageTypeSpecifier one of the imageTypes specified in BufferedImage
    * @param timeBetweenFramesMS the time between frames in miliseconds
    * @param loopContinuously wether the gif should loop repeatedly
    * @throws IIOException if no gif ImageWriters are found
@@ -44,7 +45,7 @@ public class GifSequenceWriter {
       ImageOutputStream outputStream,
       ImageTypeSpecifier imageTypeSpecifier,
       int timeBetweenFramesMS,
-      boolean loopContinuously) throws IIOException, IOException {
+      boolean loopContinuously) throws IOException {
     // my method to create a writer
     gifWriter = getWriter();
     imageWriteParam = gifWriter.getDefaultWriteParam();
@@ -100,7 +101,6 @@ public class GifSequenceWriter {
   }
 
   public void writeToSequence(RenderedImage img, IIOMetadata originalImageMetaData) throws IOException {
-
     gifWriter.writeToSequence(
       new IIOImage(
         img,
@@ -146,12 +146,9 @@ public class GifSequenceWriter {
       IIOMetadataNode rootNode,
       String nodeName) {
     int nNodes = rootNode.getLength();
-    for (int i = 0; i < nNodes; i++) {
-      if (rootNode.item(i).getNodeName().compareToIgnoreCase(nodeName)
-          == 0) {
+    for (int i = 0; i < nNodes; i++)
+      if (rootNode.item(i).getNodeName().compareToIgnoreCase(nodeName) == 0)
         return((IIOMetadataNode) rootNode.item(i));
-      }
-    }
     IIOMetadataNode node = new IIOMetadataNode(nodeName);
     rootNode.appendChild(node);
     return(node);

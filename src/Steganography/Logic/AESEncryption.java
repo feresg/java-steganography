@@ -5,33 +5,32 @@ import Steganography.Modals.AlertBox;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.MessageDigest;
-import java.security.GeneralSecurityException;
-import java.nio.charset.Charset;
-import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.Arrays;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Base64;
 
 public class AESEncryption {
+
     private static SecretKeySpec secretKey;
-    private static byte[] key;
 
-    private static SecureRandom rnd = new SecureRandom();
-    static IvParameterSpec iv = new IvParameterSpec(rnd.generateSeed(16));
-
+    private final static SecureRandom rnd = new SecureRandom();
+    private final static IvParameterSpec iv = new IvParameterSpec(rnd.generateSeed(16));
 
     private static void setKey(String myKey){
-        MessageDigest sha = null;
-        try {
-            key = myKey.getBytes(Charset.forName("UTF-8"));
+        MessageDigest sha;
+        byte[] key = myKey.getBytes(Charset.forName("UTF-8"));
+        try{
             sha = MessageDigest.getInstance("SHA-1");
             key = sha.digest(key);
             key = Arrays.copyOf(key, 16);
             secretKey = new SecretKeySpec(key, "AES");
-        } catch (GeneralSecurityException e) {
+        }catch (GeneralSecurityException e){
             e.printStackTrace();
             AlertBox.error("Error while setting key", e.getMessage());
         }
@@ -42,14 +41,15 @@ public class AESEncryption {
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
-        }catch (Exception e){
+            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes(Charset.forName("UTF-8"))));
+        }catch (GeneralSecurityException e){
             e.printStackTrace();
             AlertBox.error("Error while encrypting", e.getMessage());
         }
         return null;
     }
-    public static void encrypt(File input, File output,  String secret){
+
+    public static void encrypt(File input, File output, String secret){
         try{
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -67,18 +67,20 @@ public class AESEncryption {
             AlertBox.error("Error while encrypting", e.getMessage());
         }
     }
+
     public static String decrypt(String strToDecrypt, String secret){
         try{
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-        }catch (Exception e){
+        }catch (GeneralSecurityException e){
             e.printStackTrace();
             AlertBox.error("Error while decrypting", e.getMessage());
         }
         return null;
     }
+
     public static void decrypt(File input, File output, String secret){
         try{
             setKey(secret);
@@ -89,9 +91,8 @@ public class AESEncryption {
             fis.read(inputBytes);
             byte[] outputBytes = cipher.doFinal(Base64.getDecoder().decode(inputBytes));
             FileOutputStream fos = new FileOutputStream(output);
-            for(byte b : outputBytes){
+            for(byte b : outputBytes)
                 fos.write(b);
-            }
             fis.close();
             fos.close();
         }catch(Exception e) {
@@ -100,4 +101,5 @@ public class AESEncryption {
             AlertBox.error("Error while decrypting", e.getMessage());
         }
     }
+
 }
