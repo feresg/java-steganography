@@ -20,16 +20,16 @@ public class DocumentViewer {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
 
-        ListView<String> documentView = new ListView<>();
-        showSecretDocument(documentView, document);
+        ListView<String> secretDocumentView = new ListView<>();
+        showSecretDocument(secretDocumentView, document);
 
         VBox layout = new VBox();
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(documentView);
+        layout.getChildren().addAll(secretDocumentView);
 
 
         Scene scene = new Scene(layout, 600, 400);
-
+        //scene.getStylesheets().add(DocumentViewer.class.getResource("Steganography/Resources/stylesheet.css").toExternalForm());
         window.setScene(scene);
         window.setTitle("Document");
         window.showAndWait();

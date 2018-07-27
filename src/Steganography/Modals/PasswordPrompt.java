@@ -1,5 +1,7 @@
 package Steganography.Modals;
 
+import Steganography.Types.PasswordType;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,12 +15,13 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+
 public class PasswordPrompt {
 
     private static String errorLabelText;
     private static String password;
 
-    public static String display(String mode) {
+    public static String display(PasswordType mode) {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("Enter Password");
@@ -53,7 +56,7 @@ public class PasswordPrompt {
 
         // Button ActionEvents
         okButton.setOnAction(e -> {
-            if(mode.equals("encrypt")) {
+            if(mode == PasswordType.ENCRYPT) {
                 if (validatePassword(passText.getText(), confirmPassText.getText())) {
                     password = passText.getText();
                     window.close();
@@ -65,7 +68,7 @@ public class PasswordPrompt {
                     confirmPassText.clear();
                 }
             }
-            else if(mode.equals("decrypt")) {
+            else if(mode == PasswordType.DECRYPT) {
                 password = passText.getText();
                 window.close();
             }
@@ -83,7 +86,7 @@ public class PasswordPrompt {
         grid.setHgap(10);
         grid.setAlignment(Pos.CENTER);
         grid.getChildren().addAll(passLabel, passText, errorLabel);
-        if(mode.equals("encrypt")) {
+        if(mode == PasswordType.ENCRYPT) {
             grid.getChildren().addAll(confirmPassLabel, confirmPassText);
         }
 

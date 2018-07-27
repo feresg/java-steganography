@@ -9,11 +9,13 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -119,14 +121,41 @@
                                                             <Insets />
                                                          </VBox.margin>
                                                       </TextArea>
-                                                      <CheckBox fx:id="encryptMessage" layoutX="10.0" layoutY="379.0" mnemonicParsing="false" onAction="#getEncryptionPassword" text="Add Encryption">
+                                                      <CheckBox fx:id="compressMessage" layoutX="10.0" layoutY="383.0" mnemonicParsing="false" text="Compress Message">
                                                          <font>
                                                             <Font size="14.0" />
                                                          </font>
-                                                         <padding>
-                                                            <Insets bottom="6.0" />
-                                                         </padding>
                                                       </CheckBox>
+                                                      <CheckBox fx:id="encryptMessage" layoutX="10.0" layoutY="379.0" mnemonicParsing="false" onAction="#getEncryptionPassword" text="Encrypt Message">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </CheckBox>
+                                                      <HBox fx:id="messagePixelsPerByteWrapper" prefWidth="200.0" spacing="24.0">
+                                                         <children>
+                                                            <Label text="Pixels/Byte">
+                                                               <font>
+                                                                  <Font size="14.0" />
+                                                               </font>
+                                                            </Label>
+                                                            <RadioButton mnemonicParsing="false" selected="true" text="1">
+                                                               <font>
+                                                                  <Font size="14.0" />
+                                                               </font>
+                                                               <toggleGroup>
+                                                                  <ToggleGroup fx:id="messagePixelsPerByte" />
+                                                               </toggleGroup>
+                                                            </RadioButton>
+                                                            <RadioButton mnemonicParsing="false" text="2" toggleGroup="$messagePixelsPerByte">
+                                                               <font>
+                                                                  <Font size="14.0" />
+                                                               </font>
+                                                            </RadioButton>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="12.0" />
+                                                         </padding>
+                                                      </HBox>
                                                    </children>
                                                    <VBox.margin>
                                                       <Insets left="12.0" right="12.0" />
@@ -160,14 +189,41 @@
                                                          </padding>
                                                       </Label>
                                                       <ListView fx:id="secretDocumentContent" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                                                      <CheckBox fx:id="encryptDocument" layoutX="10.0" layoutY="420.0" mnemonicParsing="false" onAction="#getEncryptionPassword" text="Add Encryption">
+                                                      <CheckBox fx:id="compressDocument" layoutX="10.0" layoutY="420.0" mnemonicParsing="false" text="Compress Document">
                                                          <font>
                                                             <Font size="14.0" />
                                                          </font>
+                                                      </CheckBox>
+                                                      <CheckBox fx:id="encryptDocument" layoutX="10.0" layoutY="420.0" mnemonicParsing="false" onAction="#getEncryptionPassword" text="Encrypt Document">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </CheckBox>
+                                                      <HBox fx:id="documentPixelsPerByteWrapper" prefWidth="200.0" spacing="24.0">
+                                                         <children>
+                                                            <Label text="Pixels/Byte">
+                                                               <font>
+                                                                  <Font size="14.0" />
+                                                               </font>
+                                                            </Label>
+                                                            <RadioButton mnemonicParsing="false" selected="true" text="1">
+                                                               <font>
+                                                                  <Font size="14.0" />
+                                                               </font>
+                                                               <toggleGroup>
+                                                                  <ToggleGroup fx:id="documentPixelsPerByte" />
+                                                               </toggleGroup>
+                                                            </RadioButton>
+                                                            <RadioButton mnemonicParsing="false" text="2" toggleGroup="$documentPixelsPerByte">
+                                                               <font>
+                                                                  <Font size="14.0" />
+                                                               </font>
+                                                            </RadioButton>
+                                                         </children>
                                                          <padding>
                                                             <Insets bottom="12.0" />
                                                          </padding>
-                                                      </CheckBox>
+                                                      </HBox>
                                                    </children>
                                                    <VBox.margin>
                                                       <Insets left="12.0" right="12.0" />
@@ -191,7 +247,7 @@
                                                 </Tab>
                                                 <Tab fx:id="secretImageTab" disable="true" text="Hide Image">
                                        <content>
-                                          <VBox alignment="CENTER" spacing="12.0">
+                                          <VBox alignment="CENTER" prefHeight="400.0" prefWidth="446.0" spacing="12.0">
                                              <children>
                                                 <Label text="Secret Image" textFill="#9f9f9f">
                                                    <VBox.margin>
@@ -203,7 +259,7 @@
                                                 </Label>
                                                 <VBox fx:id="secretImagePane" alignment="CENTER" VBox.vgrow="ALWAYS">
                                                    <children>
-                                                      <ImageView fx:id="secretImageView" fitHeight="396.0" fitWidth="411.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
+                                                      <ImageView fx:id="secretImageView" fitHeight="360.0" fitWidth="411.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                                                          <viewport>
                                                             <Rectangle2D />
                                                          </viewport>
@@ -216,6 +272,31 @@
                                                       <Insets />
                                                    </VBox.margin>
                                                 </VBox>
+                                                <HBox prefWidth="200.0" spacing="24.0">
+                                                   <children>
+                                                      <Label text="Pixels/Pixel (3 vs 6 MSBs)">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <RadioButton mnemonicParsing="false" selected="true" text="1">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                         <toggleGroup>
+                                                            <ToggleGroup fx:id="pixelsPerPixel" />
+                                                         </toggleGroup>
+                                                      </RadioButton>
+                                                      <RadioButton mnemonicParsing="false" text="2" toggleGroup="$pixelsPerPixel">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </RadioButton>
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="12.0" />
+                                                   </padding>
+                                                </HBox>
                                                 <Button fx:id="encodeImage" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#encodeImageInImage" text="Encode">
                                                    <font>
                                                       <Font size="18.0" />

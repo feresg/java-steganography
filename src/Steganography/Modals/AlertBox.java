@@ -40,7 +40,6 @@ public class AlertBox {
                 DocumentViewer.display(file);
         }
     }
-
     public static void information(String header, String content, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");

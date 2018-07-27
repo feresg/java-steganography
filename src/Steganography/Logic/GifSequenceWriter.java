@@ -1,4 +1,3 @@
-//
 //  GifSequenceWriter.java
 //
 //  Created by Elliot Kroo on 2009-04-25.
@@ -8,6 +7,7 @@
 // License. To view a copy of this license, visit
 // http://creativecommons.org/licenses/by/3.0/ or send a letter to Creative
 // Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
+
 package Steganography.Logic;
 
 import javax.imageio.IIOException;
@@ -23,20 +23,18 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.Iterator;
 
-@SuppressWarnings("Duplicates")
 class GifSequenceWriter {
 
   private ImageWriter gifWriter;
   private ImageWriteParam imageWriteParam;
-  private IIOMetadata imageMetaData;
 
-  /**
+    /**
    * Creates a new GifSequenceWriter
    *
    * @param outputStream the ImageOutputStream to be written to
-   * @param imageTypeSpecifier one of the imageTypes specified in BufferedImage
-   * @param timeBetweenFramesMS the time between frames in miliseconds
-   * @param loopContinuously wether the gif should loop repeatedly
+   * @param imageTypeSpecifier one of the imageTypeSpecifier specified in BufferedImage
+   * @param timeBetweenFramesMS the time between frames in milliseconds
+   * @param loopContinuously whether the gif should loop repeatedly
    * @throws IIOException if no gif ImageWriters are found
    *
    * @author Elliot Kroo (elliot[at]kroo[dot]net)
@@ -50,9 +48,8 @@ class GifSequenceWriter {
     gifWriter = getWriter();
     imageWriteParam = gifWriter.getDefaultWriteParam();
 
-    imageMetaData =
-      gifWriter.getDefaultImageMetadata(imageTypeSpecifier,
-      imageWriteParam);
+      IIOMetadata imageMetaData = gifWriter.getDefaultImageMetadata(imageTypeSpecifier,
+              imageWriteParam);
 
     String metaFormatName = imageMetaData.getNativeMetadataFormatName();
 
@@ -108,7 +105,7 @@ class GifSequenceWriter {
         originalImageMetaData),
         imageWriteParam);
   }
-  
+
   /**
    * Close this GifSequenceWriter object. This does not close the underlying
    * stream, just finishes off the GIF.
@@ -118,9 +115,9 @@ class GifSequenceWriter {
   }
 
   /**
-   * Returns the first available GIF ImageWriter using 
+   * Returns the first available GIF ImageWriter using
    * ImageIO.getImageWritersBySuffix("gif").
-   * 
+   *
    * @return a GIF ImageWriter object
    * @throws IIOException if no GIF image writers are returned
    */
@@ -134,12 +131,12 @@ class GifSequenceWriter {
   }
 
   /**
-   * Returns an existing child node, or creates and returns a new child node (if 
+   * Returns an existing child node, or creates and returns a new child node (if
    * the requested node does not exist).
-   * 
+   *
    * @param rootNode the <tt>IIOMetadataNode</tt> to search for the child node.
    * @param nodeName the name of the child node.
-   * 
+   *
    * @return the child node, if found or a new node created with the given name.
    */
   private static IIOMetadataNode getNode(

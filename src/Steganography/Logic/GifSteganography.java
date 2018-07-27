@@ -10,16 +10,12 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class GifSteganography extends BaseSteganography{
 
@@ -29,17 +25,19 @@ public class GifSteganography extends BaseSteganography{
     private int i=0,j=0,k=0;
 
     // Constructor
-    public GifSteganography(File input, boolean isEncrypted) throws IOException{
+    public GifSteganography(File input, boolean isEncrypted, boolean isCompressed) throws IOException{
         this.isEncrypted = isEncrypted;
+        this.isCompressed = isCompressed;
         this.frames = Metadata.getFrames(input);
         this.metadatas = Metadata.getMetadatas(input);
         this.delayMS = Metadata.getDelayMS(input);
+        this.pixelsPerByte = 8;
     }
-    public GifSteganography(File input) throws IOException{ this(input, false); }
+    public GifSteganography(File input) throws IOException{ this(input, false, false); }
 
     private void writeHeader(byte[] header){
         for(byte b : header)
-            hidePixels(b);
+            hideByte(b);
     }
 
     public byte[] getHeader(){
@@ -47,18 +45,17 @@ public class GifSteganography extends BaseSteganography{
         int b;
         List<Byte> header = new ArrayList<>();
         do{
-            b = revealPixels();
+            b = revealByte();
             header.add((byte) b);
         }while(b != (byte) '!');
         return Helpers.toByteArray(header);
     }
 
-    public void encode(String str, File output){
+    public void encode(byte [] message, File output){
         try{
-            this.writeHeader(this.setHeader(str));
-            byte[] message = str.getBytes(Charset.forName("UTF-8"));
+            this.writeHeader(this.setHeader(message));
             for(byte b : message)
-                hidePixels(b);
+                hideByte(b);
             ImageOutputStream ios = new FileImageOutputStream(output);
             ColorModel cm = this.frames[0].getColorModel();
             ImageTypeSpecifier imageType = new ImageTypeSpecifier(cm, cm.createCompatibleSampleModel(1, 1));
@@ -76,14 +73,13 @@ public class GifSteganography extends BaseSteganography{
     public void encode(File doc, File output){
         try{
             this.writeHeader(this.setHeader(doc));
-            String line;
-            InputStreamReader stream = new InputStreamReader(new FileInputStream(doc));
-            BufferedReader reader = new BufferedReader(stream);//reads the user file
-            while((line = reader.readLine()) != null){
-                byte[] message = line.getBytes(Charset.forName("UTF-8"));
-                for(byte b : message)
-                    hidePixels(b);
-                hidePixels(newLine);
+            FileInputStream fis = new FileInputStream(doc);
+            byte[] buffer = new byte[1024];
+            int read = 0;
+            while( ( read = fis.read( buffer ) ) > 0 ){
+                for(byte b : buffer) {
+                    hideByte(b);
+                }
             }
             ImageOutputStream ios = new FileImageOutputStream(output);
             ColorModel cm = this.frames[0].getColorModel();
@@ -102,16 +98,15 @@ public class GifSteganography extends BaseSteganography{
     public void decode(File file){
         try{
             reset();
-            Map<String, String> attributes = getAttributes(this.getHeader());
-            int length = Integer.parseInt(attributes.get("length"));
+            this.setSecretInfo(new HiddenData(this.getHeader()));
             int pos = 0;
             int b;
             FileOutputStream fos = new FileOutputStream(file);
             do{
-                b = revealPixels();
+                b = revealByte();
                 fos.write((byte)b);
                 pos++;
-            }while(pos<length);
+            }while(pos<secretInfo.length);
             fos.close();
             System.out.println("Secret file saved to "+ file.getName());
         }catch(IOException e) {
@@ -120,13 +115,13 @@ public class GifSteganography extends BaseSteganography{
         }
     }
 
-    private int hidePixel(int pixel, char c){
+    private int embed(int pixel, char c){
         String before = String.format("%8s", Integer.toBinaryString(pixel)).replace(' ','0');
         String after = before.substring(0,7)+c;
         return Integer.parseInt(after,2);
     }
 
-    private void hidePixels(byte b){
+    private void hideByte(byte b){
         int[] pixel = new int[4];
         String currentByte;
         for(int l=0; l<8; l++){
@@ -134,13 +129,13 @@ public class GifSteganography extends BaseSteganography{
             raster.getPixel(j,i,pixel);
             currentByte = String.format("%8s",Integer.toBinaryString(b)).replace(' ', '0');
             currentByte = currentByte.substring(currentByte.length()-8, currentByte.length());
-            pixel[0] = hidePixel(pixel[0], currentByte.charAt(l));
+            pixel[0] = embed(pixel[0], currentByte.charAt(l));
             raster.setPixel(j,i,pixel);
             increment();
         }
     }
 
-    private byte revealPixels(){
+    private byte revealByte(){
         int pixel[] = new int[4];
         int b;
         String currentByte;

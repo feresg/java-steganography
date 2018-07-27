@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-class Metadata{
+class Metadata {
 
     public static BufferedImage[] getFrames(File gif) throws IOException {
         ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();

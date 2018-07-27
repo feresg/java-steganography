@@ -8,12 +8,12 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.nio.charset.Charset;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Base64;
 
 public class AESEncryption {
 
@@ -24,7 +24,7 @@ public class AESEncryption {
 
     private static void setKey(String myKey){
         MessageDigest sha;
-        byte[] key = myKey.getBytes(Charset.forName("UTF-8"));
+        byte[] key = myKey.getBytes(StandardCharsets.UTF_8);
         try{
             sha = MessageDigest.getInstance("SHA-1");
             key = sha.digest(key);
@@ -36,12 +36,12 @@ public class AESEncryption {
         }
     }
 
-    public static String encrypt(String strToEncrypt, String secret){
+    public static byte[] encrypt(byte[] input, String secret){
         try{
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes(Charset.forName("UTF-8"))));
+            return cipher.doFinal(input);
         }catch (GeneralSecurityException e){
             e.printStackTrace();
             AlertBox.error("Error while encrypting", e.getMessage());
@@ -54,26 +54,19 @@ public class AESEncryption {
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-            FileInputStream fis = new FileInputStream(input);
-            byte[] inputBytes = new byte[(int) input.length()];
-            fis.read(inputBytes);
-            byte[] outputBytes = Base64.getEncoder().encode(cipher.doFinal(inputBytes));
-            FileOutputStream fos = new FileOutputStream(output);
-            fos.write(outputBytes);
-            fis.close();
-            fos.close();
-        }catch(Exception e) {
+            process(cipher, input, output);
+        }catch(IOException | GeneralSecurityException e) {
             e.printStackTrace();
-            AlertBox.error("Error while encrypting", e.getMessage());
+            AlertBox.error("Error while decrypting", e.getMessage());
         }
     }
 
-    public static String decrypt(String strToDecrypt, String secret){
+    public static byte[] decrypt(byte[] input, String secret){
         try{
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+            return cipher.doFinal(input);
         }catch (GeneralSecurityException e){
             e.printStackTrace();
             AlertBox.error("Error while decrypting", e.getMessage());
@@ -86,19 +79,25 @@ public class AESEncryption {
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
-            FileInputStream fis = new FileInputStream(input);
-            byte[] inputBytes = new byte[(int) input.length()];
-            fis.read(inputBytes);
-            byte[] outputBytes = cipher.doFinal(Base64.getDecoder().decode(inputBytes));
-            FileOutputStream fos = new FileOutputStream(output);
-            for(byte b : outputBytes)
-                fos.write(b);
-            fis.close();
-            fos.close();
-        }catch(Exception e) {
+            process(cipher, input, output);
+        }catch(IOException | GeneralSecurityException e) {
             e.printStackTrace();
             output.delete();
             AlertBox.error("Error while decrypting", e.getMessage());
+        }
+    }
+
+    private static void process(Cipher ci, File input, File output) throws IOException, GeneralSecurityException{
+        try (FileInputStream fis = new FileInputStream(input);
+             FileOutputStream fos = new FileOutputStream(output)) {
+                byte[] ibuf = new byte[1024];
+                int len;
+                while ((len = fis.read(ibuf)) != -1) {
+                    byte[] obuf = ci.update(ibuf, 0, len);
+                    if ( obuf != null ) fos.write(obuf);
+                }
+            byte[] obuf = ci.doFinal();
+            if ( obuf != null ) fos.write(obuf);
         }
     }
 
