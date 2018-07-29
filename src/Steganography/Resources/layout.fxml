@@ -29,11 +29,11 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="newCoverImage" mnemonicParsing="false" onAction="#setCoverImage" text="New Cover Image..." />
-                  <MenuItem fx:id="newSteganographicImage" mnemonicParsing="false" onAction="#setSteganographicImage" text="New Steganographic Image..." />
+                        <MenuItem fx:id="newCoverImage" mnemonicParsing="false" onAction="#showCoverImage" text="New Cover Image..." />
+                  <MenuItem fx:id="newSteganographicImage" mnemonicParsing="false" onAction="#showSteganographicImage" text="New Steganographic Image..." />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="newSecretDocument" disable="true" mnemonicParsing="false" onAction="#setSecretDocument" text="New Secret Document..." />
-                        <MenuItem fx:id="newSecretImage" disable="true" mnemonicParsing="false" onAction="#setSecretImage" text="New Secret Image..." />
+                        <MenuItem fx:id="newSecretDocument" disable="true" mnemonicParsing="false" onAction="#showSecretDocument" text="New Secret Document..." />
+                        <MenuItem fx:id="newSecretImage" disable="true" mnemonicParsing="false" onAction="#showSecretImage" text="New Secret Image..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="quitApp" mnemonicParsing="false" onAction="#quitApp" text="Quit" />
                     </items>

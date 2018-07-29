@@ -1,11 +1,12 @@
 package Steganography;
 
+import Steganography.Exceptions.CannotDecodeException;
+import Steganography.Exceptions.CannotEncodeException;
 import Steganography.Logic.*;
 
 import Steganography.Modals.*;
 
 import Steganography.Types.PasswordType;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
 
 public class Controller {
 
+    // JavaFX Components
     @FXML
     private MenuItem newSecretDocument, newSecretImage;
     @FXML
@@ -53,7 +55,7 @@ public class Controller {
     // Password
     private String password;
 
-    public void setCoverImage(ActionEvent event) {
+    public void showCoverImage() {
         FileChooser fc = new FileChooser();
         fc.setTitle("New Cover Image...");
         fc.getExtensionFilters()
@@ -71,15 +73,15 @@ public class Controller {
             newSecretImage.setDisable(false);
             secretMessageTab.setDisable(false);
             secretDocumentTab.setDisable(false);
-            secretImageTab.setDisable(Helpers.getFileExtension(coverImage).toLowerCase().equals("gif"));
-            messagePixelsPerByteWrapper.setVisible(!Helpers.getFileExtension(coverImage).toLowerCase().equals("gif"));
-            documentPixelsPerByteWrapper.setVisible(!Helpers.getFileExtension(coverImage).toLowerCase().equals("gif"));
+            secretImageTab.setDisable(Utils.getFileExtension(coverImage).toLowerCase().equals("gif"));
+            messagePixelsPerByteWrapper.setVisible(!Utils.getFileExtension(coverImage).toLowerCase().equals("gif"));
+            documentPixelsPerByteWrapper.setVisible(!Utils.getFileExtension(coverImage).toLowerCase().equals("gif"));
         } else {
             AlertBox.error("Error while setting cover image", "Try again...");
         }
     }
 
-    public void setSteganographicImage(ActionEvent event) {
+    public void showSteganographicImage() {
         FileChooser fc = new FileChooser();
         fc.setTitle("New Steganographic Image...");
         fc.getExtensionFilters()
@@ -99,7 +101,7 @@ public class Controller {
         }
     }
 
-    public void setSecretDocument(ActionEvent event) {
+    public void showSecretDocument() {
         FileChooser fc = new FileChooser();
         fc.setTitle("New Secret Document...");
         secretDocument = fc.showOpenDialog(null);
@@ -116,7 +118,7 @@ public class Controller {
         }
     }
 
-    public void setSecretImage(ActionEvent event) {
+    public void showSecretImage() {
         FileChooser fc = new FileChooser();
         fc.setTitle("New Secret Image...");
         fc.getExtensionFilters()
@@ -137,14 +139,14 @@ public class Controller {
         }
     }
 
-    public void encodeMessageInImage(ActionEvent event) {
+    public void encodeMessageInImage() {
         String message = secretMessage.getText();
         byte[] secret = message.getBytes(StandardCharsets.UTF_8);
         if(compressMessage.isSelected())
             secret = ZLibCompression.compress(secret);
         if (encryptMessage.isSelected())
             secret = AESEncryption.encrypt(secret, password);
-        String imageExtension = Helpers.getFileExtension(coverImage).toLowerCase();
+        String imageExtension = Utils.getFileExtension(coverImage).toLowerCase();
         imageExtension = (imageExtension.matches("jpg|jpeg")) ? "png" : imageExtension;
         FileChooser fc = new FileChooser();
         fc.setTitle("Save Steganographic Image...");
@@ -163,15 +165,15 @@ public class Controller {
                     img = new ImageSteganography(coverImage, encryptMessage.isSelected(), compressMessage.isSelected(), getToggleGroupValue(messagePixelsPerByte));
                 img.encode(secret, steganographicImage);
                 AlertBox.information("Encoding Successful!", "Message encoded successfully in " + steganographicImage.getName() + ".", steganographicImage);
-            } catch (IOException e) {
+            } catch (IOException | CannotEncodeException e) {
                 e.printStackTrace();
                 AlertBox.error("Error while encoding", e.getMessage());
             }
         }
     }
 
-    public void encodeDocumentInImage(ActionEvent event) {
-        String secretFileExtension = Helpers.getFileExtension(secretDocument);
+    public void encodeDocumentInImage() {
+        String secretFileExtension = Utils.getFileExtension(secretDocument);
         try {
             if(compressDocument.isSelected() || encryptDocument.isSelected()) {tempFile = File.createTempFile("temp", "." + secretFileExtension); tempFile.deleteOnExit();}
             if(compressDocument.isSelected() && encryptDocument.isSelected()) {
@@ -185,7 +187,7 @@ public class Controller {
                     AESEncryption.encrypt(secretDocument, tempFile, password);
             }
             if(compressDocument.isSelected() || encryptDocument.isSelected()) { secretDocument = tempFile; }
-            String imageExtension = Helpers.getFileExtension(coverImage).toLowerCase();
+            String imageExtension = Utils.getFileExtension(coverImage).toLowerCase();
             imageExtension = (imageExtension.matches("jpg|jpeg")) ? "png" : imageExtension;
             FileChooser fc = new FileChooser();
             fc.getExtensionFilters()
@@ -202,13 +204,13 @@ public class Controller {
                 img.encode(secretDocument, steganographicImage);
                 AlertBox.information("Encoding Successful!", "Document encoded successfully in " + steganographicImage.getName() + ".", steganographicImage);
             }
-        } catch (IOException e) {
+        } catch (IOException | CannotEncodeException e) {
             e.printStackTrace();
             AlertBox.error("Error while encoding", e.getMessage());
         }
     }
 
-    public void encodeImageInImage(ActionEvent event) {
+    public void encodeImageInImage() {
         FileChooser fc = new FileChooser();
         fc.getExtensionFilters()
                 .add(new FileChooser.ExtensionFilter(
@@ -220,15 +222,15 @@ public class Controller {
                 ImageInImageSteganography img = new ImageInImageSteganography(coverImage, getToggleGroupValue(pixelsPerPixel));
                 img.encode(secretImage, steganographicImage);
                 AlertBox.information("Encoding Successful!", "Image " + secretImage.getName() + " encoded successfully in " + steganographicImage.getName() + ".", steganographicImage);
-            } catch (IOException e) {
+            } catch (IOException | CannotEncodeException e) {
                 e.printStackTrace();
                 AlertBox.error("Error while encoding", e.getMessage());
             }
         }
     }
 
-    public void decodeImage(ActionEvent event) {
-        String imageExtension = Helpers.getFileExtension(steganographicImage);
+    public void decodeImage() {
+        String imageExtension = Utils.getFileExtension(steganographicImage);
         HiddenData hiddenData;
         FileChooser fc = new FileChooser();
         File file;
@@ -286,13 +288,21 @@ public class Controller {
                     AlertBox.information("Decoding Successful!", "Image decoded in " + file.getName(), file);
                     break;
             }
-        } catch (IOException e) {
+        } catch (IOException | CannotDecodeException e) {
             e.printStackTrace();
             AlertBox.error("Error while decoding", e.getMessage());
         }
     }
 
-    public void getEncryptionPassword(ActionEvent event) {
+    public void showAboutPage() {
+        AboutPage.display();
+    }
+
+    public void quitApp() {
+        System.exit(0);
+    }
+
+    public void getEncryptionPassword() {
         if (encryptMessage.isSelected() || encryptDocument.isSelected()) {
             if ((password = PasswordPrompt.display(PasswordType.ENCRYPT)) == null) {
                 encryptMessage.setSelected(false);
@@ -301,14 +311,6 @@ public class Controller {
         } else {
             password = null;
         }
-    }
-
-    public void showAboutPage(ActionEvent event) {
-        AboutPage.display(event);
-    }
-
-    public void quitApp(ActionEvent event) {
-        System.exit(0);
     }
 
     private byte getToggleGroupValue(ToggleGroup group){

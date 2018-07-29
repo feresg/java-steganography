@@ -16,11 +16,24 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
+/**
+ * The {@code PasswordPrompt} class is used to display a password prompt to the user when embedding data in an image or extracting it from an image
+ * in a <code>JavaFX</code> application modal window.
+ */
 public class PasswordPrompt {
 
+    /** Error label displayed when {@link #validatePassword(String, String)} returns <code>false</code>. */
     private static String errorLabelText;
+    /** Encryption or decryption password. */
     private static String password;
 
+    /**
+     * Displays the password prompt application modal window.
+     *
+     * @param mode password mode (ENCRYPTION or DECRYPTION)
+     * @return     the encryption/decryption password.
+     * @see        PasswordType
+     */
     public static String display(PasswordType mode) {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -107,7 +120,16 @@ public class PasswordPrompt {
         return password;
     }
 
+    /**
+     * Checks if the encryption password isn't empty
+     * or if the password and password confirmation fields are equal
+     *
+     * @param pass        value of the password box
+     * @param confirmPass value of the confirm password box
+     * @return            <code>true</code> if password is valid, <code>false</code> if password is invalid.
+     */
     private static boolean validatePassword(String pass,String confirmPass) {
+
         boolean isValid = true;
         if(pass.equals("") || confirmPass.equals("")) {
             errorLabelText = "Both fields are required."; isValid = false;

@@ -13,9 +13,15 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+/**
+ * The {@code AboutPage} class creates a <code>JavaFX</code> application modal to display information about the StegIt app.
+ */
 public class AboutPage {
 
-    public static void display(ActionEvent event){
+    /**
+     * Displays the AboutPage modal window.
+     */
+    public static void display(){
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
 

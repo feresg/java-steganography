@@ -1,6 +1,6 @@
 package Steganography.Modals;
 
-import Steganography.Logic.Helpers;
+import Steganography.Logic.Utils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -11,8 +11,18 @@ import javafx.scene.layout.Priority;
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * The {@code AlertBox} class is uses the <code>JavaFX Alert</code> modal to display either caught error messages
+ * or various information about a successful steganography process.
+ */
 public class AlertBox {
 
+    /**
+     * Displays an error Alert box to display a caught error during the steganographic process.
+     *
+     * @param header  error header
+     * @param content general information about the error (usually from the <code>getMessage</code> method from the <code>Java Exception</code> class)
+     */
     public static void error(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -21,6 +31,13 @@ public class AlertBox {
         alert.showAndWait();
     }
 
+    /**
+     * Displays a success prompt after embeding data into an image or extracting a document or an image inside an image.
+     *
+     * @param header  information header
+     * @param content success message
+     * @param file    image or document to display
+     */
     public static void information(String header, String content, File file) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
@@ -33,13 +50,21 @@ public class AlertBox {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == viewButton){
-            String extension = Helpers.getFileExtension(file);
+            String extension = Utils.getFileExtension(file);
             if(extension.matches("png|bmp|jpg|jpeg|gif"))
                 ImageViewer.display(file);
             else
                 DocumentViewer.display(file);
         }
     }
+
+    /**
+     * Displays a success prompt after extracting a message inside an image.
+     *
+     * @param header  success header
+     * @param content success message
+     * @param message extracted message
+     */
     public static void information(String header, String content, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");

@@ -2,18 +2,36 @@ package Steganography.Logic;
 
 import Steganography.Types.DataFormat;
 
+/**
+ * The {@code HiddenData} class is used to store information on the data to embed/extract during the steganographic process.
+ */
 public class HiddenData {
 
+    /** Represents the format of the embedded data (MESSAGE, DOCUMENT or IMAGE).
+     * @see DataFormat */
     public DataFormat format;
+    /** Embedded data encryption status. */
     public boolean isEncrypted;
+    /** Embedded data compression status. */
     public boolean isCompressed;
+    /** Mode of encoding (for MESSAGE or DOCUMENT). */
     public byte pixelsPerByte;
+    /** Mode of encoding (for IMAGE). */
     public byte pixelsPerPixel;
+    /** Hidden data length. */
     public long length;
+    /** Hidden data extension. */
     public String extension;
+    /** Hidden image width. */
     public int width;
+    /** Hidden image height. */
     public int height;
 
+    /**
+     * Creates a HiddenData object from a byte array
+     *
+     * @param header byte array that contains info about the data to embed/extract
+     */
     public HiddenData(byte[] header){
         switch((char) header[0]){
             case 'M':
@@ -47,8 +65,7 @@ public class HiddenData {
             this.isCompressed = ((char) header[2]) == 'C';
             this.pixelsPerByte = header[3];
             StringBuilder length = new StringBuilder();
-            int max = (this.format == DataFormat.DOCUMENT) ? 7 : 6;
-            for(int i=4; i<max; i++){
+            for(int i=4; i<7; i++){
                 String l = String.format("%8s",Integer.toBinaryString(header[i])).replace(' ','0');
                 length.append(l.substring(l.length() - 8, l.length()));
             }
