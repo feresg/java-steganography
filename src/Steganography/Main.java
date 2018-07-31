@@ -26,7 +26,6 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("Resources/layout.fxml"));
         Image icon = new Image(Controller.class.getResource("Resources/logo.png").toExternalForm(), false);
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("Resources/stylesheet.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("StegIt");
         primaryStage.setMinWidth(900);

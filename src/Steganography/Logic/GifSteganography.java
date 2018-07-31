@@ -2,10 +2,8 @@ package Steganography.Logic;
 
 import Steganography.Exceptions.CannotDecodeException;
 import Steganography.Exceptions.CannotEncodeException;
-import Steganography.Modals.AlertBox;
 
 import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.event.IIOWriteProgressListener;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
@@ -18,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

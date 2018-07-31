@@ -1,6 +1,5 @@
 package Steganography.Modals;
 
-import Steganography.Logic.Utils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -8,7 +7,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -34,11 +35,12 @@ public class AlertBox {
     /**
      * Displays a success prompt after embeding data into an image or extracting a document or an image inside an image.
      *
-     * @param header  information header
-     * @param content success message
-     * @param file    image or document to display
+     * @param header       information header
+     * @param content      success message
+     * @param file         image or document to display
+     * @throws IOException if an error occurs when opening the file.
      */
-    public static void information(String header, String content, File file) {
+    public static void information(String header, String content, File file) throws IOException{
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(header);
@@ -50,11 +52,7 @@ public class AlertBox {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == viewButton){
-            String extension = Utils.getFileExtension(file);
-            if(extension.matches("png|bmp|jpg|jpeg|gif"))
-                ImageViewer.display(file);
-            else
-                DocumentViewer.display(file);
+            Desktop.getDesktop().open(file);
         }
     }
 

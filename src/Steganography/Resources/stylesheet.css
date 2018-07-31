@@ -10,3 +10,7 @@
     -fx-background-color: white;
     -fx-text-fill: black;
 }
+
+.background{
+    -fx-background-color: #393939;
+}

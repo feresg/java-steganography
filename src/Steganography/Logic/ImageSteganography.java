@@ -2,15 +2,14 @@ package Steganography.Logic;
 
 import Steganography.Exceptions.CannotDecodeException;
 import Steganography.Exceptions.CannotEncodeException;
+import Steganography.Exceptions.UnsupportedImageTypeException;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,27 +28,31 @@ public class ImageSteganography extends BaseSteganography {
     /**
      * Creates an <code>ImageSteganography</code> object to perform embedding or extraction of data on 24-bit, RGB Bitmap images.
      *
-     * @param input         image to embed to/extract from
-     * @param isEncrypted   whether the data to embed is encrypted
-     * @param isCompressed  whether the data to embed is compressed
-     * @param pixelsPerByte encoding mode (1 or 2 pixels/byte)
-     * @throws IOException  if an error occurs while handling the image file.
+     * @param input                          image to embed to/extract from
+     * @param isEncrypted                    whether the data to embed is encrypted
+     * @param isCompressed                   whether the data to embed is compressed
+     * @param pixelsPerByte                  encoding mode (1 or 2 pixels/byte)
+     * @throws IOException                   if an error occurs while handling the image file.
+     * @throws UnsupportedImageTypeException if the image type is unsuported e.g. grayscale image, 16bit image...
      */
-    public ImageSteganography(File input, boolean isEncrypted, boolean isCompressed, byte pixelsPerByte) throws IOException{
+    public ImageSteganography(File input, boolean isEncrypted, boolean isCompressed, byte pixelsPerByte) throws IOException, UnsupportedImageTypeException{
         this.isEncrypted = isEncrypted;
         this.isCompressed = isCompressed;
         this.pixelsPerByte = pixelsPerByte;
         this.image = ImageIO.read(input);
         this.capacity = this.image.getHeight()*this.image.getWidth()/this.pixelsPerByte;
+        if(this.image.getType() == BufferedImage.TYPE_CUSTOM || this.image.getType() >= 8)
+            throw new UnsupportedImageTypeException("Image type "+this.image.getType()+" is unsuported");
     }
 
     /**
      * Creates an <code>ImageSteganography</code> object to perform embedding or extraction of data on 24-bit, RGB Bitmap images.
      *
-     * @param input        image to embed to/extract from
-     * @throws IOException if an error occurs while handling the image file.
+     * @param input                          image to embed to/extract from
+     * @throws IOException                   if an error occurs while handling the image file.
+     * @throws UnsupportedImageTypeException if the image type is unsuported e.g. grayscale image, 16bit image...
      */
-    public ImageSteganography(File input) throws IOException{ this(input, false, false, (byte) 1); }
+    public ImageSteganography(File input) throws IOException, UnsupportedImageTypeException { this(input, false, false, (byte) 1); }
 
     /**
      * Returns the {@link #image} field used to perform the embedding/extraction on.

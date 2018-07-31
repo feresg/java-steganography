@@ -10,6 +10,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
@@ -20,38 +21,47 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Steganography.Controller">
+<VBox fx:id="root" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Steganography.Controller">
     <children>
         <MenuBar VBox.vgrow="NEVER">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="newCoverImage" mnemonicParsing="false" onAction="#showCoverImage" text="New Cover Image..." />
-                  <MenuItem fx:id="newSteganographicImage" mnemonicParsing="false" onAction="#showSteganographicImage" text="New Steganographic Image..." />
+                        <MenuItem fx:id="newCoverImage" mnemonicParsing="false" onAction="#setCoverImage" text="New Cover Image..." />
+                  <MenuItem fx:id="newSteganographicImage" mnemonicParsing="false" onAction="#setSteganographicImage" text="New Steganographic Image..." />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="newSecretDocument" disable="true" mnemonicParsing="false" onAction="#showSecretDocument" text="New Secret Document..." />
-                        <MenuItem fx:id="newSecretImage" disable="true" mnemonicParsing="false" onAction="#showSecretImage" text="New Secret Image..." />
+                        <MenuItem fx:id="newSecretDocument" disable="true" mnemonicParsing="false" onAction="#setSecretDocument" text="New Secret Document..." />
+                        <MenuItem fx:id="newSecretImage" disable="true" mnemonicParsing="false" onAction="#setSecretImage" text="New Secret Image..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="quitApp" mnemonicParsing="false" onAction="#quitApp" text="Quit" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
+                <Menu fx:id="editMenu" disable="true" mnemonicParsing="false" onShowing="#showingEditMenu" text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Undo" />
-                        <MenuItem mnemonicParsing="false" text="Redo" />
+                        <MenuItem fx:id="undoMenu" mnemonicParsing="false" onAction="#undo" text="Undo" />
+                        <MenuItem fx:id="redoMenu" mnemonicParsing="false" onAction="#redo" text="Redo" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Cut" />
-                        <MenuItem mnemonicParsing="false" text="Copy" />
-                        <MenuItem mnemonicParsing="false" text="Paste" />
-                        <MenuItem mnemonicParsing="false" text="Delete" />
+                        <MenuItem fx:id="cutMenu" mnemonicParsing="false" onAction="#cut" text="Cut" />
+                        <MenuItem fx:id="copyMenu" mnemonicParsing="false" onAction="#copy" text="Copy" />
+                        <MenuItem fx:id="pasteMenu" mnemonicParsing="false" onAction="#paste" text="Paste" />
+                        <MenuItem fx:id="deleteMenu" mnemonicParsing="false" onAction="#delete" text="Delete" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Select All" />
-                        <MenuItem mnemonicParsing="false" text="Unselect All" />
+                        <MenuItem fx:id="selectAllMenu" mnemonicParsing="false" onAction="#selectAll" text="Select All" />
+                        <MenuItem fx:id="deselectMenu" mnemonicParsing="false" onAction="#deselect" text="Descelect" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="Theme">
+              <items>
+                  <RadioMenuItem fx:id="lightTheme" mnemonicParsing="false" onAction="#setTheme" selected="true" text="Light">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="theme" />
+                     </toggleGroup>
+                  </RadioMenuItem>
+                  <RadioMenuItem fx:id="darkTheme" mnemonicParsing="false" onAction="#setTheme" text="Dark" toggleGroup="$theme" />
+              </items>
+            </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
                         <MenuItem fx:id="aboutPage" mnemonicParsing="false" onAction="#showAboutPage" text="About StegIt" />
@@ -67,13 +77,10 @@
                             <items>
                         <VBox alignment="TOP_CENTER" spacing="12.0">
                            <children>
-                                        <Label alignment="CENTER" contentDisplay="CENTER" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Cover Image" wrapText="false">
+                                        <Label alignment="CENTER" contentDisplay="CENTER" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Cover Image" textFill="#7f7f7f" wrapText="false">
                                             <font>
-                                                <Font size="18.0" fx:id="x1" />
+                                                <Font name="System Bold" size="18.0" fx:id="x1" />
                                             </font>
-                                            <textFill>
-                                                <Color blue="0.624" green="0.624" red="0.624" fx:id="x2" />
-                                            </textFill>
                                         </Label>
                               <VBox fx:id="coverImagePane" alignment="CENTER" VBox.vgrow="ALWAYS">
                                  <VBox.margin>
@@ -163,7 +170,7 @@
                                                 </VBox>
                                                 <HBox alignment="CENTER" prefHeight="64.0" prefWidth="446.0">
                                                    <children>
-                                                                      <Button fx:id="encodeMessage" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#encodeMessageInImage" text="Encode">
+                                                                      <Button fx:id="encodeMessage" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#encodeMessageInImage" text="Encode">
                                                                           <font>
                                                                               <Font size="18.0" />
                                                                           </font>
@@ -231,7 +238,7 @@
                                                 </VBox>
                                                 <HBox alignment="CENTER" prefHeight="64.0" prefWidth="446.0">
                                                    <children>
-                                                      <Button fx:id="encodeDocument" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#encodeDocumentInImage" text="Encode" HBox.hgrow="ALWAYS">
+                                                      <Button fx:id="encodeDocument" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#encodeDocumentInImage" text="Encode" HBox.hgrow="ALWAYS">
                                                          <font>
                                                             <Font size="18.0" />
                                                          </font>
@@ -249,12 +256,12 @@
                                        <content>
                                           <VBox alignment="CENTER" prefHeight="400.0" prefWidth="446.0" spacing="12.0">
                                              <children>
-                                                <Label text="Secret Image" textFill="#9f9f9f">
+                                                <Label text="Secret Image" textFill="#7f7f7f">
                                                    <VBox.margin>
                                                       <Insets top="6.0" />
                                                    </VBox.margin>
                                                    <font>
-                                                      <Font size="16.0" />
+                                                      <Font name="System Bold" size="16.0" />
                                                    </font>
                                                 </Label>
                                                 <VBox fx:id="secretImagePane" alignment="CENTER" VBox.vgrow="ALWAYS">
@@ -274,12 +281,12 @@
                                                 </VBox>
                                                 <HBox prefWidth="200.0" spacing="24.0">
                                                    <children>
-                                                      <Label text="Pixels/Pixel (3 vs 6 MSBs)">
+                                                      <Label text="Pixels/Pixel">
                                                          <font>
                                                             <Font size="14.0" />
                                                          </font>
                                                       </Label>
-                                                      <RadioButton mnemonicParsing="false" selected="true" text="1">
+                                                      <RadioButton mnemonicParsing="false" selected="true" text="1 (Maximum Size)">
                                                          <font>
                                                             <Font size="14.0" />
                                                          </font>
@@ -287,7 +294,7 @@
                                                             <ToggleGroup fx:id="pixelsPerPixel" />
                                                          </toggleGroup>
                                                       </RadioButton>
-                                                      <RadioButton mnemonicParsing="false" text="2" toggleGroup="$pixelsPerPixel">
+                                                      <RadioButton mnemonicParsing="false" text="2 (Best Quality)" toggleGroup="$pixelsPerPixel">
                                                          <font>
                                                             <Font size="14.0" />
                                                          </font>
@@ -297,7 +304,7 @@
                                                       <Insets bottom="12.0" />
                                                    </padding>
                                                 </HBox>
-                                                <Button fx:id="encodeImage" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#encodeImageInImage" text="Encode">
+                                                <Button fx:id="encodeImage" disable="true" mnemonicParsing="false" onAction="#encodeImageInImage" text="Encode">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
@@ -326,13 +333,10 @@
                      <children>
                         <VBox alignment="TOP_CENTER" prefHeight="456.0" prefWidth="852.0" spacing="24.0" AnchorPane.bottomAnchor="64.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <Label alignment="CENTER" style="&#10;" text="Steganographic Image" textAlignment="CENTER" wrapText="false">
+                              <Label alignment="CENTER" style="&#10;" text="Steganographic Image" textAlignment="CENTER" textFill="#7f7f7f" wrapText="false">
                                  <font>
                                     <Font size="18.0" fx:id="x11" />
                                  </font>
-                                 <textFill>
-                                    <Color blue="0.624" green="0.624" red="0.624" fx:id="x21" />
-                                 </textFill>
                                  <padding>
                                     <Insets top="12.0" />
                                  </padding>
@@ -349,7 +353,7 @@
                         </VBox>
                         <HBox alignment="CENTER" prefHeight="64.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0">
                            <children>
-                              <Button fx:id="decodeImage" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#decodeImage" text="Decode">
+                              <Button fx:id="decodeImage" disable="true" mnemonicParsing="false" onAction="#decodeImage" text="Decode">
                                  <font>
                                     <Font size="18.0" />
                                  </font>

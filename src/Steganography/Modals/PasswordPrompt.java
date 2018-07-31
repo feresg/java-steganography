@@ -1,5 +1,6 @@
 package Steganography.Modals;
 
+import Steganography.Logic.Utils;
 import Steganography.Types.PasswordType;
 
 import javafx.geometry.Insets;
@@ -8,13 +9,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
 
 /**
  * The {@code PasswordPrompt} class is used to display a password prompt to the user when embedding data in an image or extracting it from an image
@@ -26,6 +32,10 @@ public class PasswordPrompt {
     private static String errorLabelText;
     /** Encryption or decryption password. */
     private static String password;
+    /** Image used as key. */
+    private static File keyImage;
+    /** Sets the behaviour of the window when an image is set as a password. */
+    private static boolean keyImageEnabled = false;
 
     /**
      * Displays the password prompt application modal window.
@@ -61,15 +71,56 @@ public class PasswordPrompt {
         errorLabel.setTextFill(Color.RED);
         GridPane.setConstraints(errorLabel, 1, 2);
 
-        // Buttons:
+        // Buttons
+        Button imageButton = new Button("Use Image");
         Button okButton = new Button("OK");
         okButton.setDefaultButton(true);
         Button cancelButton = new Button("Cancel");
         cancelButton.setCancelButton(true);
 
+        // Image View
+        ImageView keyImageView = new ImageView();
+        keyImageView.setPreserveRatio(true);
+
+        // HBox
+        HBox base = new HBox(10);
+        base.setPadding(new Insets(10));
+        base.setAlignment(Pos.BASELINE_RIGHT);
+        base.getChildren().addAll(imageButton, okButton, cancelButton);
+
+        // GridPane with 10px padding around edge
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 20, 10, 20));
+        grid.setVgap(8);
+        grid.setHgap(10);
+        grid.setAlignment(Pos.CENTER);
+        grid.getChildren().addAll(passLabel, passText);
+        if(mode == PasswordType.ENCRYPT) {
+            grid.getChildren().addAll(confirmPassLabel, confirmPassText);
+        }
+        grid.getChildren().add(errorLabel);
+
+        // BorderPane (Password Scene)
+        BorderPane passwordPane = new BorderPane();
+        passwordPane.setCenter(grid);
+        passwordPane.setBottom(base);
+
+        // VBox (Image Scene)
+        VBox imagePane = new VBox(12);
+        imagePane.setAlignment(Pos.CENTER);
+        imagePane.setPadding(new Insets(0,10,20,10));
+        imagePane.getChildren().add(keyImageView);
+        keyImageView.fitWidthProperty().bind(imagePane.widthProperty());
+        keyImageView.fitHeightProperty().bind(imagePane.heightProperty());
+        imagePane.setMaxSize(500, 300);
+
         // Button ActionEvents
         okButton.setOnAction(e -> {
-            if(mode == PasswordType.ENCRYPT) {
+            if(keyImageEnabled){
+                password = Utils.hashImage(keyImage);
+                window.close();
+            }
+            else if(mode == PasswordType.ENCRYPT) {
                 if (validatePassword(passText.getText(), confirmPassText.getText())) {
                     password = passText.getText();
                     window.close();
@@ -86,35 +137,27 @@ public class PasswordPrompt {
                 window.close();
             }
         });
-
+        imageButton.setOnAction(e -> {
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Hash Image...");
+            fc.getExtensionFilters()
+                    .add(new FileChooser.ExtensionFilter(
+                            "Image Files",
+                            "*.png", "*.bmp", "*.jpg", "*.jpeg"));
+            keyImage = fc.showOpenDialog(null);
+            keyImageView.setImage(new Image(keyImage.toURI().toString()));
+            imagePane.getChildren().add(base);
+            Scene imageScene = new Scene(imagePane);
+            window.setScene(imageScene);
+            window.sizeToScene();
+            keyImageEnabled = true;
+        });
         cancelButton.setOnAction(e -> {
             password = null;
             window.close();
         });
 
-        // GridPane with 10px padding around edge
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setVgap(8);
-        grid.setHgap(10);
-        grid.setAlignment(Pos.CENTER);
-        grid.getChildren().addAll(passLabel, passText, errorLabel);
-        if(mode == PasswordType.ENCRYPT) {
-            grid.getChildren().addAll(confirmPassLabel, confirmPassText);
-        }
-
-        // HBox
-        HBox base = new HBox(5);
-        base.setPadding(new Insets(10));
-        base.setAlignment(Pos.BASELINE_RIGHT);
-        base.getChildren().addAll(okButton, cancelButton);
-
-        // BorderPane
-        BorderPane bPane = new BorderPane();
-        bPane.setCenter(grid);
-        bPane.setBottom(base);
-
-        Scene scene = new Scene(bPane);
+        Scene scene = new Scene(passwordPane);
         window.setScene(scene);
         window.showAndWait();
         return password;

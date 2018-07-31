@@ -2,7 +2,7 @@ package Steganography.Logic;
 
 import Steganography.Exceptions.CannotDecodeException;
 import Steganography.Exceptions.CannotEncodeException;
-import Steganography.Modals.AlertBox;
+import Steganography.Exceptions.UnsupportedImageTypeException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -25,19 +25,21 @@ public class ImageInImageSteganography extends ImageSteganography{
     /**
      * Creates an <code>ImageInImageSteganography</code> object to perform embedding/extraction of another image.
      *
-     * @param input          image to embed/extract from
-     * @param pixelsPerPixel embedding/extraction mode
-     * @throws IOException   if an error occurs while handling the cover/stego image.
+     * @param input                          image to embed/extract from
+     * @param pixelsPerPixel                 embedding/extraction mode
+     * @throws IOException                   if an error occurs while handling the cover/stego image.
+     * @throws UnsupportedImageTypeException if the image type is unsuported e.g. grayscale image, 16bit image...
      */
-    public ImageInImageSteganography(File input, byte pixelsPerPixel) throws IOException{ super(input); this.pixelsPerPixel = pixelsPerPixel; }
+    public ImageInImageSteganography(File input, byte pixelsPerPixel) throws IOException, UnsupportedImageTypeException{ super(input); this.pixelsPerPixel = pixelsPerPixel; }
 
     /**
      * Creates an <code>ImageInImageSteganography</code> object to perform embedding/extraction of another image.
      *
-     * @param input        image to embed/extract from
-     * @throws IOException if an error occurs while handling the cover/stego image.
+     * @param input                          image to embed/extract from
+     * @throws IOException                   if an error occurs while handling the cover/stego image.
+     * @throws UnsupportedImageTypeException if the image type is unsuported e.g. grayscale image, 16bit image...
      */
-    public ImageInImageSteganography(File input) throws IOException{ this(input,(byte) 1);}
+    public ImageInImageSteganography(File input) throws IOException, UnsupportedImageTypeException{ this(input,(byte) 1);}
 
     /**
      * Sets the class {@link #header} field with information about the secret image to embed in the cover image.
