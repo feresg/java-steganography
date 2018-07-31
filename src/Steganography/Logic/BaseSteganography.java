@@ -126,9 +126,9 @@ public abstract class BaseSteganography{
     /**
      * Sets the class {@link #header} field with information about a message to embed in the image.
      * <p>The header contains the following :</p>
-     * <pre><code>['M', Encryption Status ('E' | 'C'), Compression Status ('C' | 'U'), Pixels/Byte (1|2), Message length (2 bits = 65535 bytes), '!']</code></pre>
+     * <pre><code>['M', Encryption Status ('E' | 'C'), Compression Status ('C' | 'U'), Pixels/Byte (1|2), Message length (3 bytes = 16777215 bytes), '!']</code></pre>
      * <p>Example:</p>
-     * <pre><code>[01001101, 01000100, 01010101, 00000001, 00110011, 11001100, 00100001]</code></pre>
+     * <pre><code>[01001101, 01000100, 01010101, 00000001, 00000000, 00110011, 11001100, 00100001]</code></pre>
      * <p> Corresponds to:</p>
      * <pre><code>['M' (Message), 'E' (isEncrypted), 'U' (!isCompressed), 1 Pixel/Byte, 13260 bytes, '!']</code></pre>
      *
@@ -160,7 +160,7 @@ public abstract class BaseSteganography{
     /**
      * Sets the class {@link #header} field with information about a file document to embed in the image.
      * <p>The header contains the following :</p>
-     * <pre><code>['D', Encryption Status ('E' | 'C'), Compression Status ('C' | 'U'), Pixels/Byte (1|2), File length (3 bits = 16777215 bytes), File extension, '!']</code></pre>
+     * <pre><code>['D', Encryption Status ('E' | 'C'), Compression Status ('C' | 'U'), Pixels/Byte (1|2), File length (3 bytes = 16777215 bytes), File extension, '!']</code></pre>
      * <p>Example:</p>
      * <pre><code>[01000100, 01000101, 01000011, 00000010, 01010101, 10101010, 01010101, 01001010, 01000001, 01010110, 01000001, 00100001]</code></pre>
      * <p> Corresponds to:</p>
