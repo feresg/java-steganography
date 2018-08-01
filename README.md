@@ -5,7 +5,8 @@
 ![Screenshot](https://github.com/feresg/java-steganography/raw/master/Screenshot.png)
 
 ### An image steganography application to hide text, documents or images in images.
-    StegIt uses the Least Significant Bit (LSB) algorithm to hide the secret data in the least significant bits of each RGB components of an image in a way that will be invisible to the naked eye
+
+StegIt uses the Least Significant Bit (LSB) algorithm to hide the secret data in the least significant bits of each RGB components of an image in a way that will be invisible to the naked eye
     
 ##### Authors: [Feres Gaaloul](https://github.com/feresg), [Ilyes Hamrouni](https://github.com/ilyes-hamrouni)
     ENSI Summer Project.
@@ -20,15 +21,15 @@
 - Interaction with system applications and clipboard.
 
 #### Environment :
-    This application is built using `Java` and `JavaFX` for GUI development.
+This application is built using `Java` and `JavaFX` for GUI development.
 
 #### Requirements:
-    `Java JDK` is required to build the project, `Java JRE` is required to run the project.
+`Java JDK` is required to build the project, `Java JRE` is required to run the project.
 
 #### Notes:
   - Tested working document formats :
-      - WORKING .txt, .log, (any plain text file format (.java, .py .cpp...)) .xml .rtf (includes rich text formatting) .doc (with basic rich text formatting).
-      - NOT working : .pdf .docx.
+    - Working : any plain text documents ( `.txt`, `.log`, `.java`, `.py`,  `.cpp`, `.html`,  `.xml`). and rich format documents (`.rtf` and `.doc` (with basic formatting)).
+      - Not Working : `.pdf`, `.docx`.
       
 #### Issues:
   - Cover `JPG` images are saved as `PNG` to avoid loss of hidden data after JPEG compression.
