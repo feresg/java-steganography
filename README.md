@@ -2,7 +2,7 @@
 
 > The word “steganography” can be defined as “covered writing” or the technique of hiding messages inside other messages. It is derived from a Greek word “στεγαυω”. This idea of data hiding is not a novelty, it has been used for centuries all across the world under different regimes - but to date it is still unknown to most people - is a tool for hiding information so that it does not even appear to exist.
 
-![Screenshot](https://github.com/feresg/java-steganography/raw/master/UI.png)
+![Screenshot](https://github.com/feresg/java-steganography/raw/master/Screenshot.png)
 
 ### An image steganography application to hide text, documents or images in images.
     StegIt uses the Least Significant Bit (LSB) algorithm to hide the secret data in the least significant bits of each RGB components of an image in a way that will be invisible to the naked eye
@@ -39,7 +39,7 @@
   - __testFiles__ : images and documents used to test the app.
   - __documentation__ : `JavaDoc` documentation of the project.
   - __StegIt.jar__ : Binary application.
-  - __UI.png__ : main screenshot.
+  - __Screenshot.png__ : main screenshot.
   - __Package Steganography.png__ : `UML` class diagram.
   - __Algorithme.pdf__ : project, GUI and algorithms description (in french).
 
