@@ -9,7 +9,7 @@
 StegIt uses the Least Significant Bit (LSB) algorithm to hide the secret data in the least significant bits of each RGB components of an image in a way that will be invisible to the naked eye
     
 ##### Authors: [Feres Gaaloul](https://github.com/feresg), [Ilyes Hamrouni](https://github.com/ilyes-hamrouni)
-    ENSI Summer Project.
+#####ENSI Summer Project.
 
 #### Features:
 - Use 24 bit bitmap  `PNG`, `BMP`  and `JPG`  images and also animated `GIF` images as cover image.
@@ -28,8 +28,8 @@ This application is built using `Java` and `JavaFX` for GUI development.
 
 #### Notes:
   - Tested working document formats :
-    - Working : any plain text documents ( `.txt`, `.log`, `.java`, `.py`,  `.cpp`, `.html`,  `.xml`). and rich format documents (`.rtf` and `.doc` (with basic formatting)).
-      - Not Working : `.pdf`, `.docx`.
+    - Working : any plain text documents ( `.txt`, `.log`, `.java`, `.py`,  `.cpp`, `.html`,  `.xml`). and rich format documents (`.rtf` , `.doc` (with basic formatting))  and `.pdf` documents.
+    - Not Working : `.docx`.
       
 #### Issues:
   - Cover `JPG` images are saved as `PNG` to avoid loss of hidden data after JPEG compression.
