@@ -9,7 +9,7 @@
 StegIt uses the Least Significant Bit (LSB) algorithm to hide the secret data in the least significant bits of each RGB components of an image in a way that will be invisible to the naked eye
     
 ##### Authors: [Feres Gaaloul](https://github.com/feresg), [Ilyes Hamrouni](https://github.com/ilyes-hamrouni)
-#####ENSI Summer Project.
+##### ENSI Summer Project.
 
 #### Features:
 - Use 24 bit bitmap  `PNG`, `BMP`  and `JPG`  images and also animated `GIF` images as cover image.
